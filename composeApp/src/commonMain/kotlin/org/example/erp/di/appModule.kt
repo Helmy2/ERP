@@ -9,5 +9,5 @@ expect val platformModule: Module
 val appModule = module {
     includes(coreModule)
     includes(supabaseModule)
-    includes(authModule)
+    includes(userModule)
 }

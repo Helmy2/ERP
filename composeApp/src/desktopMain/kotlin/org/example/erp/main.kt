@@ -17,7 +17,7 @@ import org.example.erp.core.App
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.presentation.AppTheme
 import org.example.erp.di.initKoin
-import org.example.erp.features.auth.domain.usecase.IsUserLongedInUseCase
+import org.example.erp.features.user.domain.usecase.IsUserLongedInUseCase
 import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import org.koin.compose.koinInject
 

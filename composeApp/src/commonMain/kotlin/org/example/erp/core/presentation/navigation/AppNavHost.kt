@@ -1,5 +1,6 @@
 package org.example.erp.core.presentation.navigation
 
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -8,7 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
-import org.example.erp.features.auth.presentation.authRoute
+import org.example.erp.features.user.presentation.login.LoginRoute
+import org.example.erp.features.user.presentation.profile.SettingsRoute
+import org.example.erp.features.user.presentation.register.RegisterRoute
 import org.koin.compose.koinInject
 
 @Composable
@@ -20,7 +23,7 @@ fun AppNavHost(
     NavHost(
         navController = navigator.navController,
         startDestination = startDestination,
-        modifier = modifier,
+        modifier = modifier.systemBarsPadding(),
     ) {
         navigation<Destination.Main>(
             startDestination = Destination.Main.Dashboard
@@ -31,12 +34,20 @@ fun AppNavHost(
             composable<Destination.Main.Inventory> {
                 Text("Inventory")
             }
+            composable<Destination.Main.Settings> {
+                SettingsRoute()
+            }
         }
 
         navigation<Destination.Auth>(
             startDestination = Destination.Auth.Login
         ) {
-            authRoute()
+            composable<Destination.Auth.Login> {
+                LoginRoute()
+            }
+            composable<Destination.Auth.Register> {
+                RegisterRoute()
+            }
         }
     }
 }

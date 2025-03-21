@@ -5,7 +5,7 @@ import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.password_requirement_length
 import erp.composeapp.generated.resources.password_requirement_special
 import erp.composeapp.generated.resources.password_requirement_uppercase
-import org.example.erp.features.auth.domain.entity.Requirement
+import org.example.erp.features.user.domain.entity.Requirement
 
 fun calculatePasswordRequirements(password: String): List<Requirement> {
     return listOf(

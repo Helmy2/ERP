@@ -21,5 +21,8 @@ sealed class Destination {
 
         @Serializable
         data object Inventory : Destination()
+
+        @Serializable
+        data object Settings : Destination()
     }
 }

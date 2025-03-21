@@ -6,10 +6,16 @@
     <string name="create_account">Create Account</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="no_account">Don't have an account?</string>
+    <string name="logout">Logout</string>
 
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="theme">Theme</string>
+
+    <string name="update_name">Update Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Invalid password</string>
@@ -31,5 +37,6 @@
 
     <string name="dashboard">Dashboard</string>
     <string name="inventory">Inventory</string>
+    <string name="settings">Settings</string>
 
 </resources>

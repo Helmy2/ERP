@@ -1,6 +1,6 @@
 package org.example.erp.core.util
 
-import org.example.erp.features.auth.domain.entity.PasswordStrength
+import org.example.erp.features.user.domain.entity.PasswordStrength
 
 fun calculatePasswordStrength(password: String): PasswordStrength {
     val hasSpecialChar = password.any { !it.isLetterOrDigit() }
