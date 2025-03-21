@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
+import org.example.erp.features.auth.presentation.authRoute
 import org.koin.compose.koinInject
 
 @Composable
@@ -35,18 +36,8 @@ fun AppNavHost(
         navigation<Destination.Auth>(
             startDestination = Destination.Auth.Login
         ) {
-            composable<Destination.Auth.Login> {
-                Text("Login")
-            }
-            composable<Destination.Auth.Register> {
-                Text("Register")
-            }
+            authRoute()
         }
-
-        composable<Destination.Onboarding> {
-            Text("Onboarding")
-        }
-
     }
 }
 

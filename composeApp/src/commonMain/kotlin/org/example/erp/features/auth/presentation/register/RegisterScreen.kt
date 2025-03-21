@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,14 +26,13 @@ import erp.composeapp.generated.resources.email
 import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.no_account
 import erp.composeapp.generated.resources.register
+import org.example.erp.features.auth.domain.entity.PasswordStrength
 import org.example.erp.features.auth.presentation.components.AuthButton
+import org.example.erp.features.auth.presentation.components.AuthHeader
 import org.example.erp.features.auth.presentation.components.AuthPasswordField
 import org.example.erp.features.auth.presentation.components.AuthTextButton
 import org.example.erp.features.auth.presentation.components.AuthTextField
 import org.example.erp.features.auth.presentation.components.PasswordStrengthIndicator
-import org.example.erp.core.presentation.components.AdaptivePane
-import org.example.erp.features.auth.domain.entity.PasswordStrength
-import org.example.erp.features.auth.presentation.components.AuthHeader
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -43,96 +41,92 @@ fun RegisterScreen(
 ) {
     val focus = LocalFocusManager.current
 
-    AdaptivePane(
-        modifier.verticalScroll(rememberScrollState()).padding(16.dp),
-        firstPane = {
-            AuthHeader(
-                title = Res.string.create_account,
-                body = Res.string.no_account,
-                modifier = Modifier.size(300.dp).padding(16.dp),
-            )
-        },
-        secondPane = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.sizeIn(maxWidth = 600.dp)
-            ) {
-                AuthTextField(
-                    value = state.name,
-                    label = stringResource(Res.string.name),
-                    error = state.nameError,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    onValueChange = { onEvent(RegisterEvent.NameChanged(it)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.verticalScroll(rememberScrollState())
+            .padding(16.dp),
+    ) {
 
-                AuthTextField(
-                    value = state.email,
-                    label = stringResource(Res.string.email),
-                    error = state.emailError,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-                    ),
-                    onValueChange = { onEvent(RegisterEvent.EmailChanged(it)) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+        AuthHeader(
+            title = Res.string.create_account,
+            body = Res.string.no_account,
+        )
 
-                AuthPasswordField(value = state.password,
-                    error = state.passwordError,
-                    isVisible = state.isPasswordVisible,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
-                    ),
-                    onValueChange = { onEvent(RegisterEvent.PasswordChanged(it)) },
-                    onVisibilityToggle = { onEvent(RegisterEvent.TogglePasswordVisibility) },
-                    onDone = {
-                        focus.clearFocus()
-                        onEvent(RegisterEvent.Register)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    supportingText = {
-                        AnimatedContent(state.passwordError != null) {
-                            if (it) {
-                                Text(
-                                    text = if (state.passwordError != null) stringResource(state.passwordError) else "",
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.labelSmall,
-                                )
-                            } else {
-                                AnimatedVisibility(
-                                    state.passwordStrength != PasswordStrength.STRONG && state.password.isNotEmpty()
-                                ) {
-                                    PasswordStrengthIndicator(
-                                        strength = state.passwordStrength,
-                                        requirements = state.passwordRequirements,
-                                    )
-                                }
-                            }
-                        }
-                    })
+        AuthTextField(
+            value = state.name,
+            label = stringResource(Res.string.name),
+            error = state.nameError,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            onValueChange = { onEvent(RegisterEvent.NameChanged(it)) },
+            modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth()
+        )
 
-                AuthButton(
-                    isLoading = state.isLoading,
-                    text = stringResource(Res.string.register),
-                    onClick = {
-                        focus.clearFocus()
-                        onEvent(RegisterEvent.Register)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+        AuthTextField(
+            value = state.email,
+            label = stringResource(Res.string.email),
+            error = state.emailError,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
+            ),
+            onValueChange = { onEvent(RegisterEvent.EmailChanged(it)) },
+            modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth()
+        )
 
-
-                AuthTextButton(
-                    onClick = { onEvent(RegisterEvent.NavigateToLogin) },
-                    content = {
+        AuthPasswordField(
+            value = state.password,
+            error = state.passwordError,
+            isVisible = state.isPasswordVisible,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
+            ),
+            onValueChange = { onEvent(RegisterEvent.PasswordChanged(it)) },
+            onVisibilityToggle = { onEvent(RegisterEvent.TogglePasswordVisibility) },
+            onDone = {
+                focus.clearFocus()
+                onEvent(RegisterEvent.Register)
+            },
+            modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth(),
+            supportingText = {
+                AnimatedContent(state.passwordError != null) {
+                    if (it) {
                         Text(
-                            stringResource(Res.string.already_have_account),
-                            style = MaterialTheme.typography.bodyMedium
+                            text = if (state.passwordError != null) stringResource(state.passwordError) else "",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.labelSmall,
                         )
-                    },
+                    } else {
+                        AnimatedVisibility(
+                            state.passwordStrength != PasswordStrength.STRONG && state.password.isNotEmpty()
+                        ) {
+                            PasswordStrengthIndicator(
+                                strength = state.passwordStrength,
+                                requirements = state.passwordRequirements,
+                            )
+                        }
+                    }
+                }
+            })
+
+        AuthButton(
+            isLoading = state.isLoading,
+            text = stringResource(Res.string.register),
+            onClick = {
+                focus.clearFocus()
+                onEvent(RegisterEvent.Register)
+            },
+            modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth()
+        )
+
+
+        AuthTextButton(
+            onClick = { onEvent(RegisterEvent.NavigateToLogin) },
+            content = {
+                Text(
+                    stringResource(Res.string.already_have_account),
+                    style = MaterialTheme.typography.bodyMedium
                 )
-            }
-        }
-    )
+            },
+        )
+    }
 }

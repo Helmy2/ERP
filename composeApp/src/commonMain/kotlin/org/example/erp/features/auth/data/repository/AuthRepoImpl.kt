@@ -1,6 +1,7 @@
 package org.example.erp.features.auth.data.repository
 
-import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,14 +16,14 @@ import org.example.erp.core.util.DISPLAY_NAME_KEY
 import org.example.erp.features.auth.domain.repository.AuthRepo
 
 class AuthRepoImpl(
-    private val auth: Auth,
+    private val supabaseClient: SupabaseClient,
     private val exceptionMapper: ExceptionMapper,
     private val dispatcher: CoroutineDispatcher,
 ) : AuthRepo {
 
     override fun isUserLongedIn(): Flow<Boolean> {
         return channelFlow {
-            auth.sessionStatus.collectLatest {
+            supabaseClient.auth.sessionStatus.collectLatest {
                 when (it) {
                     is SessionStatus.Authenticated -> trySend(true)
                     is SessionStatus.NotAuthenticated -> trySend(false)
@@ -36,7 +37,7 @@ class AuthRepoImpl(
         email: String, password: String
     ): Result<Unit> = withContext(dispatcher) {
         try {
-            auth.signInWith(Email) {
+            supabaseClient.auth.signInWith(Email) {
                 this.email = email
                 this.password = password
             }
@@ -50,7 +51,7 @@ class AuthRepoImpl(
         name: String, email: String, password: String
     ): Result<Unit> = withContext(dispatcher) {
         try {
-            auth.signUpWith(Email) {
+            supabaseClient.auth.signUpWith(Email) {
                 this.email = email
                 this.password = password
 

@@ -4,13 +4,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.ui.graphics.vector.ImageVector
+import erp.composeapp.generated.resources.Res
+import erp.composeapp.generated.resources.dashboard
+import erp.composeapp.generated.resources.inventory
+import org.jetbrains.compose.resources.StringResource
 
 
-data class TopLevelRoute(val name: String, val route: Destination, val icon: ImageVector)
+data class TopLevelRoute(val name: StringResource, val route: Destination, val icon: ImageVector)
 
 object TopLevelRoutes {
     val routes = listOf(
-        TopLevelRoute("Dashboard", Destination.Main.Dashboard, Icons.Default.Dashboard),
-        TopLevelRoute("Inventory", Destination.Main.Inventory, Icons.Default.Inventory),
+        TopLevelRoute(Res.string.dashboard, Destination.Main.Dashboard, Icons.Default.Dashboard),
+        TopLevelRoute(Res.string.inventory, Destination.Main.Inventory, Icons.Default.Inventory),
     )
 }

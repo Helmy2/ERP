@@ -9,6 +9,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.TopLevelRoutes
+import org.jetbrains.compose.resources.stringResource
 
 fun NavigationSuiteScope.mainNavigationItems(
     onDestinationSelected: (destinations: Destination) -> Unit,
@@ -21,13 +22,13 @@ fun NavigationSuiteScope.mainNavigationItems(
             icon = {
                 Icon(
                     topLevelRoute.icon,
-                    contentDescription = topLevelRoute.name,
+                    contentDescription = stringResource(topLevelRoute.name),
                     tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             },
             label = {
                 Text(
-                    text = topLevelRoute.name,
+                    text = stringResource(topLevelRoute.name),
                     color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             },

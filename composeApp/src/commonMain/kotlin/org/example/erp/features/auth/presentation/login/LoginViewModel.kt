@@ -2,9 +2,6 @@ package org.example.erp.features.auth.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import erp.composeapp.generated.resources.Res
-import erp.composeapp.generated.resources.error_invalid_email
-import erp.composeapp.generated.resources.error_invalid_password
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +13,6 @@ import kotlinx.coroutines.launch
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.snackbar.SnackbarManager
-import org.example.erp.core.util.isValidEmail
 import org.example.erp.features.auth.domain.usecase.IsUserLongedInFlowUseCase
 import org.example.erp.features.auth.domain.usecase.LoginUseCase
 
@@ -70,8 +66,6 @@ class LoginViewModel(
     }
 
     private fun login() {
-        if (!validateLoginInputs()) return
-
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
             val result = loginUseCase(state.value.email, state.value.password)
@@ -87,21 +81,6 @@ class LoginViewModel(
             onSuccess = { onSuccess() },
             onFailure = { snackbarManager.showErrorSnackbar(it.message.orEmpty()) },
         )
-    }
-
-    // Enhanced validation
-    private fun validateLoginInputs(): Boolean {
-        val emailValid = isValidEmail(state.value.email)
-        val passwordValid = state.value.password.length >= 8
-
-        _state.update {
-            it.copy(
-                emailError = if (emailValid) null else Res.string.error_invalid_email,
-                passwordError = if (passwordValid) null else Res.string.error_invalid_password,
-            )
-        }
-
-        return emailValid && passwordValid
     }
 }
 

@@ -20,7 +20,6 @@ import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.navigation.TopLevelRoutes
 import org.example.erp.core.domain.snackbar.SnackbarManager
-import org.example.erp.core.presentation.AppTheme
 import org.example.erp.core.presentation.navigation.AppNavHost
 import org.example.erp.core.presentation.navigation.mainNavigationItems
 import org.example.erp.core.util.Connectivity
@@ -37,9 +36,7 @@ fun App(startDestination: Destination = Destination.Main) {
     koinInject<Navigator>(parameters = { parametersOf(navController) })
     koinInject<SnackbarManager>(parameters = { parametersOf(snackbarHostState) })
 
-    AppTheme {
-        MainScaffold(startDestination)
-    }
+    MainScaffold(startDestination)
 }
 
 

@@ -6,9 +6,6 @@ sealed class Destination {
     val name: String get() = this::class.simpleName ?: "unknown"
 
     @Serializable
-    data object Onboarding : Destination()
-
-    @Serializable
     data object Auth : Destination() {
         @Serializable
         data object Login : Destination()

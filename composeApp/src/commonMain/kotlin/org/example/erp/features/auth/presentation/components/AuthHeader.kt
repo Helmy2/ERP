@@ -24,7 +24,7 @@ fun AuthHeader(
     ) {
         Text(
             text = stringResource(title),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.animateContentSize()
         )
