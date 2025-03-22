@@ -12,7 +12,7 @@ import org.example.erp.features.user.domain.usecase.LogoutUseCase
 import org.example.erp.features.user.domain.usecase.RegisterUseCase
 import org.example.erp.features.user.domain.usecase.UpdateNameUseCase
 import org.example.erp.features.user.presentation.login.LoginViewModel
-import org.example.erp.features.user.presentation.profile.SettingsViewModel
+import org.example.erp.features.user.presentation.setting.SettingsViewModel
 import org.example.erp.features.user.presentation.register.RegisterViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -38,7 +38,7 @@ val userModule = module {
 
     viewModel { LoginViewModel(get(), get(), get(), get()) }
     viewModel { RegisterViewModel(get(), get(), get()) }
-    viewModel { SettingsViewModel(get(), get(), get(), get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 

@@ -10,7 +10,7 @@ import androidx.navigation.compose.navigation
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.features.user.presentation.login.LoginRoute
-import org.example.erp.features.user.presentation.profile.SettingsRoute
+import org.example.erp.features.user.presentation.setting.SettingsRoute
 import org.example.erp.features.user.presentation.register.RegisterRoute
 import org.koin.compose.koinInject
 

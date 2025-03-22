@@ -1,4 +1,4 @@
-package org.example.erp.features.user.presentation.profile
+package org.example.erp.features.user.presentation.setting
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -10,20 +10,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
@@ -31,6 +30,7 @@ import erp.composeapp.generated.resources.email
 import erp.composeapp.generated.resources.logout
 import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.theme
+import org.example.erp.features.user.presentation.components.ClickableText
 import org.example.erp.features.user.presentation.components.ThemeSwitch
 import org.example.erp.features.user.presentation.components.UpdateNameDialog
 import org.jetbrains.compose.resources.stringResource
@@ -60,7 +60,9 @@ fun SettingsScreen(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.sizeIn(maxWidth = 400.dp).fillMaxWidth()
+                modifier = Modifier.sizeIn(maxWidth = 400.dp)
+                    .padding(vertical =  8.dp)
+                    .fillMaxWidth()
             ) {
                 Text(
                     text = stringResource(Res.string.email),
@@ -68,7 +70,7 @@ fun SettingsScreen(
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = if (state.user?.email.isNullOrEmpty()) "Unknown" else state.user?.email!!,
+                    text = state.user?.email ?: "Unknown",
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -81,18 +83,19 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(Modifier.weight(1f))
-                Text(
-                    text = state.user?.name ?: "Anonymous",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                ClickableText(
+                    content = {
+                        Row {
+                            Text(text = state.user?.name ?: "Anonymous")
+                            Spacer(Modifier.width(8.dp))
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "Edit Name"
+                            )
+                        }
+                    },
+                    onClick = { onEvent(SettingsEvent.EditeNameDialog(true)) }
                 )
-                IconButton(
-                    onClick = { onEvent(SettingsEvent.EditeNameDialog(true)) },
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Edit, contentDescription = "Edit Name"
-                    )
-                }
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -103,7 +106,10 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(Modifier.weight(1f))
-                ThemeSwitch()
+                ThemeSwitch(
+                    themeMode = state.themeMode,
+                    onThemeChange = { onEvent(SettingsEvent.ThemeChanged(it)) }
+                )
             }
             Button(
                 onClick = { onEvent(SettingsEvent.Logout) },

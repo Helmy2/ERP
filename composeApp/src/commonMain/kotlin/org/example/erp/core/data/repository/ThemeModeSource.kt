@@ -1,0 +1,45 @@
+package org.example.erp.core.data.repository
+
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+import org.example.erp.core.domain.entity.ThemeMode
+import org.example.erp.core.domain.repository.ThemeModeSource
+import kotlin.coroutines.cancellation.CancellationException
+
+class ThemeModeSourceImpl(
+    private val dataStore: DataStore<Preferences>
+) : ThemeModeSource {
+    companion object {
+        private const val THEME_KEY = "themeKey"
+    }
+
+    override fun getThemeMode(): Flow<ThemeMode> {
+        return dataStore.data.map {
+            val theme = it[stringPreferencesKey(THEME_KEY)] ?: ThemeMode.System.name
+            ThemeMode.valueOf(theme)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun changeTheme(
+        mode: ThemeMode
+    ) {
+        return withContext(Dispatchers.IO) {
+            try {
+                dataStore.edit {
+                    it[stringPreferencesKey(THEME_KEY)] = mode.name
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                e.printStackTrace()
+            }
+        }
+    }
+}
+

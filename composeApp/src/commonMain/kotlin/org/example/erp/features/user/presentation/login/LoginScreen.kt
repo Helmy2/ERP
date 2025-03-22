@@ -2,6 +2,7 @@ package org.example.erp.features.user.presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -53,7 +54,7 @@ fun LoginScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.verticalScroll(rememberScrollState()).padding(16.dp),
+        modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(16.dp),
     ) {
         CredentialsHeader(
             title = Res.string.welcome_back,

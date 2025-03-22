@@ -71,6 +71,8 @@ kotlin {
             implementation(libs.supabase.storage)
             implementation(libs.supabase.functions)
             implementation(libs.supabase.compose.auth)
+
+            implementation(libs.datastore.preferences)
         }
 
         desktopMain.dependencies {

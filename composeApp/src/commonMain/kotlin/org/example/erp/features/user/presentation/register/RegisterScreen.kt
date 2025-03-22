@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -55,8 +56,7 @@ fun RegisterScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier = modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(16.dp),
     ) {
 
         CredentialsHeader(
@@ -120,13 +120,10 @@ fun RegisterScreen(
             })
 
         ProgressiveButton(
-            isLoading = state.isLoading,
-            text = stringResource(Res.string.register),
-            onClick = {
+            isLoading = state.isLoading, text = stringResource(Res.string.register), onClick = {
                 focus.clearFocus()
                 onEvent(RegisterEvent.Register)
-            },
-            modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth()
+            }, modifier = Modifier.sizeIn(maxWidth = 600.dp).fillMaxWidth()
         )
 
 
