@@ -12,10 +12,17 @@
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="theme">Theme</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="system_default">System Default</string>
+
 
     <string name="update_name">Update Name</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="arabic">Arabic</string>
 
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Invalid password</string>

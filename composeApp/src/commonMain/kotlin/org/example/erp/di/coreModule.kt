@@ -2,8 +2,8 @@ package org.example.erp.di
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavHostController
-import org.example.erp.core.domain.repository.ThemeModeSource
-import org.example.erp.core.data.repository.ThemeModeSourceImpl
+import org.example.erp.core.domain.repository.SettingsManager
+import org.example.erp.core.data.repository.SettingsManagerImpl
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.core.domain.usecase.ChangeThemeModeUseCase
@@ -19,8 +19,8 @@ val coreModule = module {
     single<SnackbarManager> { (snackbarHostState: SnackbarHostState) ->
         SnackbarManagerImpl(snackbarHostState)
     }
-    single<ThemeModeSource> {
-        ThemeModeSourceImpl(get())
+    single<SettingsManager> {
+        SettingsManagerImpl(get())
     }
     factory { GetThemeModeUseCase(get()) }
     single { ChangeThemeModeUseCase(get()) }

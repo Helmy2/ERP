@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,11 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.email
+import erp.composeapp.generated.resources.language
 import erp.composeapp.generated.resources.logout
-import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.theme
+import org.example.erp.core.domain.entity.Language
+import org.example.erp.core.domain.entity.ThemeMode
 import org.example.erp.features.user.presentation.components.ClickableText
-import org.example.erp.features.user.presentation.components.ThemeSwitch
 import org.example.erp.features.user.presentation.components.UpdateNameDialog
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,59 +61,45 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.sizeIn(maxWidth = 400.dp)
-                    .padding(vertical =  8.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(Res.string.email),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = state.user?.email ?: "Unknown",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            LabeledRow(
+                label = stringResource(Res.string.email),
+                content = { Text(state.user?.email ?: "") },
                 modifier = Modifier.sizeIn(maxWidth = 400.dp).fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(Res.string.name),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.weight(1f))
-                ClickableText(
-                    content = {
-                        Row {
-                            Text(text = state.user?.name ?: "Anonymous")
-                            Spacer(Modifier.width(8.dp))
-                            Icon(
-                                imageVector = Icons.Outlined.Edit,
-                                contentDescription = "Edit Name"
-                            )
-                        }
-                    },
-                    onClick = { onEvent(SettingsEvent.EditeNameDialog(true)) }
-                )
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            )
+
+            LabeledRow(
+                label = stringResource(Res.string.theme),
+                content = {
+                    ClickableText(
+                        content = {
+                            Row {
+                                Text(text = state.user?.name ?: "Anonymous")
+                                Spacer(Modifier.width(8.dp))
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "Edit Name"
+                                )
+                            }
+                        },
+                        onClick = { onEvent(SettingsEvent.UpdateEditeNameDialog(true)) }
+                    )
+                },
                 modifier = Modifier.sizeIn(maxWidth = 400.dp).fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(Res.string.theme),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(Modifier.weight(1f))
-                ThemeSwitch(
-                    themeMode = state.themeMode,
-                    onThemeChange = { onEvent(SettingsEvent.ThemeChanged(it)) }
-                )
-            }
+            )
+            ThemeSettingsRow(
+                showDialog = state.showThemeDialog,
+                onShowDialog = { onEvent(SettingsEvent.UpdateThemeDialog(it)) },
+                themeMode = state.themeMode,
+                onThemeChange = { onEvent(SettingsEvent.UpdateThemeMode(it)) },
+                modifier = Modifier.sizeIn(maxWidth = 400.dp).fillMaxWidth()
+            )
+            LanguageSettingRow(
+                showDialog = state.showLanguageDialog,
+                onShowDialog = { onEvent(SettingsEvent.UpdateLanguageDialog(it)) },
+                language = state.language,
+                onLanguageChange = { onEvent(SettingsEvent.UpdateLanguage(it)) },
+                modifier = Modifier.sizeIn(maxWidth = 400.dp).fillMaxWidth()
+            )
             Button(
                 onClick = { onEvent(SettingsEvent.Logout) },
             ) {
@@ -122,9 +111,122 @@ fun SettingsScreen(
                 name = state.name,
                 onValueChange = { onEvent(SettingsEvent.UpdateName(it)) },
                 onConfirm = { onEvent(SettingsEvent.ConfirmUpdateName) },
-                onDismiss = { onEvent(SettingsEvent.EditeNameDialog(false)) },
+                onDismiss = { onEvent(SettingsEvent.UpdateEditeNameDialog(false)) },
                 modifier = Modifier.padding(16.dp)
             )
         }
     }
+}
+
+@Composable
+fun LabeledRow(
+    label: String,
+    content: @Composable () -> Unit,
+    modifier: Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.titleMedium
+        )
+        Spacer(Modifier.weight(1f))
+        content()
+    }
+}
+
+@Composable
+fun ThemeSettingsRow(
+    showDialog: Boolean,
+    onShowDialog: (Boolean) -> Unit,
+    themeMode: ThemeMode,
+    onThemeChange: (ThemeMode) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LabeledRow(
+        label = stringResource(Res.string.theme),
+        content = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ClickableText(
+                    content = {
+                        Row {
+                            Text(stringResource(themeMode.resource()))
+                            Spacer(Modifier.width(8.dp))
+                            Icon(Icons.Outlined.Edit, contentDescription = null)
+                        }
+                    },
+                    onClick = {
+                        onShowDialog(true)
+                    }
+                )
+                DropdownMenu(
+                    expanded = showDialog,
+                    onDismissRequest = { onShowDialog(false)},
+                    modifier = Modifier,
+                    content = {
+                        ThemeMode.entries.forEach { themeMode ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(stringResource(themeMode.resource()))
+                                },
+                                onClick = {
+                                    onThemeChange(themeMode)
+                                }
+                            )
+                        }
+                    }
+                )
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun LanguageSettingRow(
+    showDialog: Boolean,
+    onShowDialog: (Boolean) -> Unit,
+    language: Language,
+    onLanguageChange: (Language) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LabeledRow(
+        label = stringResource(Res.string.language),
+        content = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ClickableText(
+                    content = {
+                        Row {
+                            Text(stringResource(language.resource()))
+                            Spacer(Modifier.width(8.dp))
+                            Icon(Icons.Outlined.Edit, contentDescription = null)
+                        }
+                    },
+                    onClick = {
+                        onShowDialog(true)
+                    }
+                )
+                DropdownMenu(
+                    expanded = showDialog,
+                    onDismissRequest = { onShowDialog(false) },
+                    modifier = Modifier,
+                    content = {
+                        Language.entries.forEach { lang ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(lang.resource())) },
+                                onClick = { onLanguageChange(lang) }
+                            )
+                        }
+                    }
+                )
+            }
+        },
+        modifier = modifier
+    )
 }

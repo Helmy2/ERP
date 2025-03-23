@@ -9,15 +9,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.example.erp.core.domain.entity.Language
 import org.example.erp.core.domain.entity.ThemeMode
-import org.example.erp.core.domain.repository.ThemeModeSource
+import org.example.erp.core.domain.repository.SettingsManager
 import kotlin.coroutines.cancellation.CancellationException
 
-class ThemeModeSourceImpl(
+class SettingsManagerImpl(
     private val dataStore: DataStore<Preferences>
-) : ThemeModeSource {
+) : SettingsManager {
     companion object {
         private const val THEME_KEY = "themeKey"
+        private const val LANGUAGE_KEY = "languageKey"
     }
 
     override fun getThemeMode(): Flow<ThemeMode> {
@@ -40,6 +42,28 @@ class ThemeModeSourceImpl(
                 e.printStackTrace()
             }
         }
+    }
+
+    override suspend fun changeLanguage(
+        language: Language
+    ) {
+        return withContext(Dispatchers.IO) {
+            try {
+                dataStore.edit {
+                    it[stringPreferencesKey(LANGUAGE_KEY)] = language.name
+                }
+            } catch (e: Exception) {
+                if (e is CancellationException) throw e
+                e.printStackTrace()
+            }
+        }
+    }
+
+    override fun getLanguage(): Flow<Language> {
+        return dataStore.data.map {
+            val language = it[stringPreferencesKey(LANGUAGE_KEY)] ?: Language.English.name
+            Language.valueOf(language)
+        }.flowOn(Dispatchers.IO)
     }
 }
 

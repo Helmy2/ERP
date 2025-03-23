@@ -9,11 +9,14 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.example.erp.core.domain.entity.Language
 import org.example.erp.core.domain.entity.ThemeMode
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.snackbar.SnackbarManager
+import org.example.erp.core.domain.usecase.ChangeLanguageUseCase
 import org.example.erp.core.domain.usecase.ChangeThemeModeUseCase
+import org.example.erp.core.domain.usecase.GetLanguageUseCase
 import org.example.erp.core.domain.usecase.GetThemeModeUseCase
 import org.example.erp.features.user.domain.usecase.CurrentUserFlowUseCase
 import org.example.erp.features.user.domain.usecase.LogoutUseCase
@@ -26,14 +29,15 @@ class SettingsViewModel(
     private val snackbarManager: SnackbarManager,
     private val getThemeModeUseCase: GetThemeModeUseCase,
     private val changeThemeModeUseCase: ChangeThemeModeUseCase,
+    private val getLanguageUseCase: GetLanguageUseCase,
+    private val changeLanguageUseCase: ChangeLanguageUseCase,
     private val navigator: Navigator,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
     val state = _state
         .onStart {
-            loadUser()
-
+            initializeUserData()
         }
         .stateIn(
             scope = viewModelScope,
@@ -44,10 +48,27 @@ class SettingsViewModel(
     fun handleEvent(event: SettingsEvent) {
         when (event) {
             is SettingsEvent.Logout -> logout()
-            is SettingsEvent.EditeNameDialog -> updateEditeNameDialog(event.show)
+            is SettingsEvent.UpdateEditeNameDialog -> updateEditeNameDialog(event.show)
             is SettingsEvent.UpdateName -> updateName(event.name)
             is SettingsEvent.ConfirmUpdateName -> confirmUpdate()
-            is SettingsEvent.ThemeChanged -> updateTheme(event.mode)
+            is SettingsEvent.UpdateThemeMode -> updateTheme(event.mode)
+            is SettingsEvent.UpdateLanguage -> updateLanguage(event.language)
+            is SettingsEvent.UpdateLanguageDialog -> updateLangeDialog(event.show)
+            is SettingsEvent.UpdateThemeDialog -> updateThemeDialog(event.show)
+        }
+    }
+
+    private fun updateThemeDialog(show: Boolean) {
+        _state.update { it.copy(showThemeDialog = show) }
+    }
+
+    private fun updateLangeDialog(show: Boolean) {
+        _state.update { it.copy(showLanguageDialog = show) }
+    }
+
+    private fun updateLanguage(language: Language) {
+        viewModelScope.launch {
+            changeLanguageUseCase(language)
         }
     }
 
@@ -81,7 +102,7 @@ class SettingsViewModel(
         _state.update { it.copy(showEditNameDialog = show) }
     }
 
-    private fun loadUser() {
+    private fun initializeUserData() {
         viewModelScope.launch {
             launch {
                 currentUserFlowUseCase().collectLatest { result ->
@@ -91,6 +112,11 @@ class SettingsViewModel(
             launch {
                 getThemeModeUseCase().collectLatest { result ->
                     _state.update { it.copy(themeMode = result) }
+                }
+            }
+            launch {
+                getLanguageUseCase().collectLatest { result ->
+                    _state.update { it.copy(language = result) }
                 }
             }
         }
