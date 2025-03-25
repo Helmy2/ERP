@@ -10,4 +10,5 @@ val appModule = module {
     includes(coreModule)
     includes(supabaseModule)
     includes(userModule)
+    includes(inventoryModule)
 }
