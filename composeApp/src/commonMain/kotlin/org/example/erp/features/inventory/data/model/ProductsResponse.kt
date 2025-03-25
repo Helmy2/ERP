@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProductsResponse(
-    val id: String,
+    val id: String? =null,
     val code: String,
     val name: String,
-    val sku: String,
+    val sku: String? = null,
     val description: String? = null,
     @SerialName("category_id")
     val categoryId: String? = null,
@@ -31,11 +31,11 @@ data class ProductsResponse(
     @SerialName("unit_of_measure_id")
     val unitOfMeasureId: String,
     @SerialName("created_at")
-    val createdAt: Instant,
+    val createdAt: Instant? = null,
     @SerialName("updated_at")
     val updatedAt: Instant? = null,
     @SerialName("created_by")
-    val createdBy: String,
+    val createdBy: String? = null,
     @SerialName("updated_by")
     val updatedBy: String? = null
 )

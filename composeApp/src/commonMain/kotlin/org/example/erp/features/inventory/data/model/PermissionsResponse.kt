@@ -10,7 +10,7 @@ data class PermissionsResponse(
     val name: String,
     val description: String? = null,
     @SerialName("created_at")
-    val createdAt: Instant,
+    val createdAt: Instant? = null,
     @SerialName("updated_at")
     val updatedAt: Instant? = null
 )

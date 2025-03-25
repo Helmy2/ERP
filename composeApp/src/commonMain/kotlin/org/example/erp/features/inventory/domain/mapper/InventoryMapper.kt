@@ -1,7 +1,6 @@
 package org.example.erp.features.inventory.domain.mapper
 
 import kotlinx.datetime.Clock
-import org.example.erp.features.inventory.data.model.AppRoleResponse
 import org.example.erp.features.inventory.data.model.AuditLogsResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionDetailsResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionsResponse
@@ -10,11 +9,9 @@ import org.example.erp.features.inventory.data.model.ProductCategoriesResponse
 import org.example.erp.features.inventory.data.model.ProductsResponse
 import org.example.erp.features.inventory.data.model.RolePermissionsResponse
 import org.example.erp.features.inventory.data.model.StockLevelsResponse
-import org.example.erp.features.inventory.data.model.TransactionTypeResponse
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 import org.example.erp.features.inventory.data.model.UserRolesResponse
 import org.example.erp.features.inventory.data.model.WarehousesResponse
-import org.example.erp.features.inventory.domain.entity.AppRole
 import org.example.erp.features.inventory.domain.entity.AuditLogs
 import org.example.erp.features.inventory.domain.entity.InventoryTransactionDetails
 import org.example.erp.features.inventory.domain.entity.InventoryTransactions
@@ -23,7 +20,6 @@ import org.example.erp.features.inventory.domain.entity.ProductCategories
 import org.example.erp.features.inventory.domain.entity.Products
 import org.example.erp.features.inventory.domain.entity.RolePermissions
 import org.example.erp.features.inventory.domain.entity.StockLevels
-import org.example.erp.features.inventory.domain.entity.TransactionType
 import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
 import org.example.erp.features.inventory.domain.entity.UserRoles
 import org.example.erp.features.inventory.domain.entity.Warehouses
@@ -32,32 +28,31 @@ import org.example.erp.features.inventory.domain.entity.Warehouses
 // Mapper extension functions
 
 fun UnitsOfMeasureResponse.toDomain(): UnitsOfMeasure = UnitsOfMeasure(
-    id = id,
-    name = name,
+    id = id!!,
     code = code,
+    name = name,
     description = description,
-    createdAt = createdAt,
+    createdAt = createdAt!!,
     updatedAt = updatedAt,
-    createdBy = createdBy,
+    createdBy = createdBy!!,
     updatedBy = updatedBy
 )
 
 fun ProductCategoriesResponse.toDomain(): ProductCategories = ProductCategories(
-    id = id,
+    id = id!!,
     code = code,
     name = name,
     parentCategoryId = parentCategoryId,
-    createdAt = createdAt,
+    createdAt = createdAt!!,
     updatedAt = updatedAt,
-    createdBy = createdBy,
+    createdBy = createdBy!!,
     updatedBy = updatedBy
 )
 
 fun ProductsResponse.toDomain(): Products = Products(
-    id = id,
-    code = code,
-    name = name,
-    sku = sku,
+    id = id!!,
+    code = code,    name = name,
+    sku = sku.orEmpty(),
     description = description.orEmpty(),
     categoryId = categoryId.orEmpty(),
     unitPrice = unitPrice,
@@ -68,44 +63,46 @@ fun ProductsResponse.toDomain(): Products = Products(
     isActive = isActive ?: true,
     deletedAt = deletedAt,
     unitOfMeasureId = unitOfMeasureId,
-    createdAt = createdAt,
+    createdAt = createdAt!!,
     updatedAt = updatedAt,
-    createdBy = createdBy,
+    createdBy = createdBy!!,
     updatedBy = updatedBy
 )
 
 fun WarehousesResponse.toDomain(): Warehouses = Warehouses(
-    id = id,
+    id = id!!,
     code = code,
     name = name,
     location = location.orEmpty(),
     capacity = capacity ?: 0,
-    createdAt = createdAt,
+    createdAt = createdAt!!,
     updatedAt = updatedAt,
-    createdBy = createdBy,
+    createdBy = createdBy!!,
     updatedBy = updatedBy
 )
 
-fun InventoryTransactionsResponse.toDomain(): InventoryTransactions = InventoryTransactions(
-    id = id,
-    code = code,
-    warehouseId = warehouseId,
-    transactionType = transactionType.toDomain(),
-    transactionDate = transactionDate ?: Clock.System.now(),
-    notes = notes ?: "",
-    createdAt = createdAt,
-    updatedAt = updatedAt ?: Clock.System.now(),
-    createdBy = createdBy,
-    updatedBy = updatedBy,
-    listOfItem = emptyList() // The list of items will likely be fetched separately
-)
+fun InventoryTransactionsResponse.toDomain(list: List<InventoryTransactionDetails> = emptyList()): InventoryTransactions =
+    InventoryTransactions(
+        id = id!!,
+        code = code,
+        warehouseId = warehouseId,
+        transactionType = transactionType,
+        transactionDate = transactionDate ?: Clock.System.now(),
+        notes = notes ?: "",
+        createdAt = createdAt!!,
+        updatedAt = updatedAt,
+        createdBy = createdBy!!,
+        updatedBy = updatedBy,
+        listOfItem = list
+    )
 
-fun InventoryTransactionDetailsResponse.toDomain(): InventoryTransactionDetails = InventoryTransactionDetails(
-    id = id,
-    transactionId = transactionId,
-    productId = productId,
-    quantity = quantity
-)
+fun InventoryTransactionDetailsResponse.toDomain(): InventoryTransactionDetails =
+    InventoryTransactionDetails(
+        id = id,
+        transactionId = transactionId,
+        productId = productId,
+        quantity = quantity
+    )
 
 fun StockLevelsResponse.toDomain(): StockLevels = StockLevels(
     productId = productId,
@@ -118,18 +115,18 @@ fun PermissionsResponse.toDomain(): Permissions = Permissions(
     id = id,
     name = name,
     description = description,
-    createdAt = createdAt,
+    createdAt = createdAt!!,
     updatedAt = updatedAt
 )
 
 fun RolePermissionsResponse.toDomain(): RolePermissions = RolePermissions(
-    role = role.toDomain(),
+    role = role,
     permissionId = permissionId
 )
 
 fun UserRolesResponse.toDomain(): UserRoles = UserRoles(
     userId = userId,
-    role = role.toDomain(),
+    role = role,
     assignedAt = assignedAt ?: Clock.System.now(),
     assignedBy = assignedBy
 )
@@ -144,16 +141,3 @@ fun AuditLogsResponse.toDomain(): AuditLogs = AuditLogs(
     newValues = newValues,
     executedAt = executedAt
 )
-
-// Enum mapping extensions
-
-fun TransactionTypeResponse.toDomain(): TransactionType = when (this) {
-    TransactionTypeResponse.ADDITION -> TransactionType.ADDITION
-    TransactionTypeResponse.SUBTRACTION -> TransactionType.SUBTRACTION
-}
-
-fun AppRoleResponse.toDomain(): AppRole = when (this) {
-    AppRoleResponse.ADMIN -> AppRole.ADMIN
-    AppRoleResponse.INVENTORY_MANAGER -> AppRole.INVENTORY_MANAGER
-}
-
