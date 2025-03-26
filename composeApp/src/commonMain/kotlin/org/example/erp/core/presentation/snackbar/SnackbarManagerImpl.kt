@@ -8,8 +8,8 @@ class SnackbarManagerImpl(
     override val snackbarHostState: SnackbarHostState
 ) : SnackbarManager {
 
-    override suspend fun showErrorSnackbar(value: String) {
-        println("SnackbarManagerImpl.showErrorSnackbar: $value")
+    override suspend fun showErrorSnackbar(value: String, exception: Throwable) {
+        println("SnackbarManagerImpl.showErrorSnackbar: $exception")
         dismissSnackbar()
         snackbarHostState.showSnackbar(value)
     }

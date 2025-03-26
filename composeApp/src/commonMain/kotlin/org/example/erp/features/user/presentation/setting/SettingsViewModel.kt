@@ -85,10 +85,11 @@ class SettingsViewModel(
             val result = updateNameUseCase(state.value.name)
             result.fold(
                 onSuccess = {
-                    snackbarManager.showErrorSnackbar("Name updated successfully")
+                    snackbarManager.showSnackbar("Name updated successfully")
+                    _state.update { it.copy(user = it.user?.copy(name = state.value.name)) }
                 },
                 onFailure = {
-                    snackbarManager.showErrorSnackbar(it.message.orEmpty())
+                    snackbarManager.showErrorSnackbar(it.message.orEmpty(), it)
                 }
             )
         }
@@ -106,7 +107,12 @@ class SettingsViewModel(
         viewModelScope.launch {
             launch {
                 currentUserFlowUseCase().collectLatest { result ->
-                    _state.update { it.copy(user = result.getOrNull()) }
+                    _state.update {
+                        it.copy(
+                            user = result.getOrNull(),
+                            name = result.getOrNull()?.name ?: ""
+                        )
+                    }
                 }
             }
             launch {
@@ -130,7 +136,7 @@ class SettingsViewModel(
                     navigator.navigateAsStart(Destination.Auth)
                 },
                 onFailure = {
-                    snackbarManager.showErrorSnackbar(it.message.orEmpty())
+                    snackbarManager.showErrorSnackbar(it.message.orEmpty(), it)
                 }
             )
         }

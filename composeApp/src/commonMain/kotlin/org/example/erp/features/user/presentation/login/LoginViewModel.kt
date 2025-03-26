@@ -79,7 +79,7 @@ class LoginViewModel(
         _state.update { it.copy(loading = false) }
         result.fold(
             onSuccess = { onSuccess() },
-            onFailure = { snackbarManager.showErrorSnackbar(it.message.orEmpty()) },
+            onFailure = { snackbarManager.showErrorSnackbar(it.message.orEmpty(),it) },
         )
     }
 }
