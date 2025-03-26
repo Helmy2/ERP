@@ -9,7 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
-import org.example.erp.features.inventory.presentation.InventoryRoute
+import org.example.erp.features.inventory.presentation.inventory.InventoryRoute
+import org.example.erp.features.inventory.presentation.unitOfMeasures.UnitOfMeasuresRoute
 import org.example.erp.features.user.presentation.login.LoginRoute
 import org.example.erp.features.user.presentation.setting.SettingsRoute
 import org.example.erp.features.user.presentation.register.RegisterRoute
@@ -49,6 +50,10 @@ fun AppNavHost(
             composable<Destination.Auth.Register> {
                 RegisterRoute()
             }
+        }
+
+        composable<Destination.UnitOfMeasures> {
+            UnitOfMeasuresRoute()
         }
     }
 }

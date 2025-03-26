@@ -31,6 +31,7 @@ import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.email
 import erp.composeapp.generated.resources.language
 import erp.composeapp.generated.resources.logout
+import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.theme
 import org.example.erp.core.domain.entity.Language
 import org.example.erp.core.domain.entity.ThemeMode
@@ -68,7 +69,7 @@ fun SettingsScreen(
             )
 
             LabeledRow(
-                label = stringResource(Res.string.theme),
+                label = stringResource(Res.string.name),
                 content = {
                     ClickableText(
                         content = {

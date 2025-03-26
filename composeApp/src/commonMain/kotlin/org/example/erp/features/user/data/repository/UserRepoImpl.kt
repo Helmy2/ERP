@@ -46,7 +46,7 @@ class UserRepoImpl(
             val name = supabaseClient.from(USER_ROLE)
                 .select {
                     filter { User::id eq it }
-                }.decodeSingle<Map<String, String>>()
+                }.decodeSingle<Map<String, String?>>()
 
             return name[DISPLAY_NAME_KEY]
         }

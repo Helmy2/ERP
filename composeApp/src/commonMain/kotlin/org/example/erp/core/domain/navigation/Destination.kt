@@ -25,4 +25,8 @@ sealed class Destination {
         @Serializable
         data object Settings : Destination()
     }
+
+    @Serializable
+    data object UnitOfMeasures : Destination()
+
 }
