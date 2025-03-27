@@ -1,12 +1,14 @@
 package org.example.erp.features.inventory.data.model
 
+import androidx.room.Entity
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Entity(primaryKeys = ["id"])
 @Serializable
 data class UnitsOfMeasureResponse(
-    val id: String? = null,
+    val id: String,
     val code: String,
     val name: String,
     val description: String? = null,

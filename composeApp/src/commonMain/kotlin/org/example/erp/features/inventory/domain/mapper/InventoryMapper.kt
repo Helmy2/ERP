@@ -27,17 +27,14 @@ import org.example.erp.features.inventory.domain.entity.Warehouses
 
 // Mapper extension functions
 
-fun UnitsOfMeasureResponse.toDomain(
-    createdBy: String,
-    updatedBy: String? = null
-): UnitsOfMeasure = UnitsOfMeasure(
-    id = id!!,
+fun UnitsOfMeasureResponse.toDomain(): UnitsOfMeasure = UnitsOfMeasure(
+    id = id,
     code = code,
     name = name,
     description = description,
     createdAt = createdAt!!,
     updatedAt = updatedAt,
-    createdBy = createdBy,
+    createdBy = createdBy!!,
     updatedBy = updatedBy
 )
 
