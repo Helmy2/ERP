@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.hotReload)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -73,6 +74,9 @@ kotlin {
             implementation(libs.supabase.compose.auth)
 
             implementation(libs.datastore.preferences)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
 
         desktopMain.dependencies {
@@ -111,7 +115,12 @@ android {
 }
 
 dependencies {
+    ksp(libs.androidx.room.compiler)
     debugImplementation(compose.uiTooling)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 compose.desktop {

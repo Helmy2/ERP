@@ -2,6 +2,10 @@ package org.example.erp.di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import org.example.erp.core.data.core.AppDatabase
 import org.example.erp.core.util.Connectivity
 import org.example.erp.core.util.ConnectivityImp
 import org.example.erp.core.util.PREFERENCES_NAME
@@ -20,5 +24,15 @@ actual val platformModule: Module = module {
                 androidApplication().filesDir.resolve(PREFERENCES_NAME).absolutePath
             }
         )
+    }
+    single<AppDatabase> {
+        val dbFile = androidApplication().getDatabasePath("erp.db")
+        Room.databaseBuilder(
+            androidApplication(),
+            AppDatabase::class.java,
+            dbFile.absolutePath
+        ).fallbackToDestructiveMigration(true)
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO).build()
     }
 }

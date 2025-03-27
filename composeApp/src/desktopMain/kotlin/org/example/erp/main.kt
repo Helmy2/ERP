@@ -11,8 +11,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import org.example.erp.core.App
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.presentation.AppTheme
@@ -27,6 +29,7 @@ fun main() {
         Window(
             onCloseRequest = ::exitApplication,
             title = "ERP",
+            state = rememberWindowState(width = 1000.dp, height = 600.dp)
         ) {
             DevelopmentEntryPoint {
                 val isUserLongedInUseCase = koinInject<IsUserLongedInUseCase>()
