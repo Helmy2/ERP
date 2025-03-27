@@ -4,7 +4,7 @@ import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
 
 data class UnitOfMeasuresState(
     val loading: Boolean = true,
-    val unitOfMeasures: List<UnitsOfMeasure> = emptyList(),
+    val unitsOfMeasureList: List<UnitsOfMeasure> = emptyList(),
     val selectedUnitOfMeasure: UnitsOfMeasure? = null,
     val code: String = "",
     val name: String = "",

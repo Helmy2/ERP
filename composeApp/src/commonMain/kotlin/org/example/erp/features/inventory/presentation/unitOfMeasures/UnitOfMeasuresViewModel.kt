@@ -30,7 +30,7 @@ class UnitOfMeasuresViewModel(
     private fun leadInit() {
         viewModelScope.launch {
             repository.getAllUnitsOfMeasure().collect { list ->
-                _state.update { it.copy(unitOfMeasures = list, loading = false) }
+                _state.update { it.copy(unitsOfMeasureList = list.sortedBy { measure -> measure.code }, loading = false) }
             }
         }
     }
@@ -59,7 +59,7 @@ class UnitOfMeasuresViewModel(
         viewModelScope.launch {
             _state.update { it.copy(code = code, loading = true) }
 
-            val unitsOfMeasure = _state.value.unitOfMeasures.firstOrNull { item ->
+            val unitsOfMeasure = _state.value.unitsOfMeasureList.firstOrNull { item ->
                 item.code == code
             }
 
@@ -92,11 +92,11 @@ class UnitOfMeasuresViewModel(
                 name = _state.value.name,
                 description = _state.value.description,
             ).onSuccess {
+                clearState()
                 snackbarManager.showSnackbar("Unit of measure updated")
             }.onFailure {
                 snackbarManager.showErrorSnackbar("Error updating unit of measure", it)
             }
-            updateCode(_state.value.code)
             _state.update { it.copy(loading = false) }
         }
     }
@@ -105,11 +105,11 @@ class UnitOfMeasuresViewModel(
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
             repository.deleteUnitOfMeasure(_state.value.code).onSuccess {
+                clearState()
                 snackbarManager.showSnackbar("Unit of measure deleted")
             }.onFailure {
                 snackbarManager.showErrorSnackbar("Error deleting unit of measure", it)
             }
-            _state.update { it.copy(loading = false) }
         }
     }
 
@@ -121,12 +121,24 @@ class UnitOfMeasuresViewModel(
                 name = _state.value.name,
                 description = _state.value.description
             ).onSuccess {
+                clearState()
                 snackbarManager.showSnackbar("Unit of measure created")
             }.onFailure {
                 snackbarManager.showErrorSnackbar("Error creating unit of measure", it)
             }
-            updateCode(_state.value.code)
             _state.update { it.copy(loading = false) }
+        }
+    }
+
+    private fun clearState(){
+        _state.update {
+            it.copy(
+                loading = false,
+                selectedUnitOfMeasure = null,
+                code = "",
+                name = "",
+                description = ""
+            )
         }
     }
 }
