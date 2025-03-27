@@ -55,6 +55,7 @@
     <string name="code">Code</string>
     <string name="description">Description</string>
     <string name="back_button">Back button</string>
+    <string name="unit_of_measures">Unit of measures</string>
 
 
 </resources>

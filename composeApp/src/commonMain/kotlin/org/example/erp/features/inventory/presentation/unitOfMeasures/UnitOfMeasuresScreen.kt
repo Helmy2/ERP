@@ -6,12 +6,9 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
@@ -39,10 +36,12 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun UnitOfMeasuresRoute(
+    onBack: () -> Unit,
     viewModel: UnitOfMeasuresViewModel = koinViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    UnitOfMeasuresScreen(state = state, onEvent = viewModel::handleEvent)
+    UnitOfMeasuresScreen(state = state, onEvent = viewModel::handleEvent, onBack = onBack, modifier)
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -50,20 +49,15 @@ fun UnitOfMeasuresRoute(
 fun UnitOfMeasuresScreen(
     state: UnitOfMeasuresState,
     onEvent: (UnitOfMeasuresEvent) -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState()),
-
+        modifier = modifier
     ) {
         BackButton(
-            onClick = {
-                onEvent(UnitOfMeasuresEvent.NavigateBack)
-            },
-            modifier = Modifier.align(
-                Alignment.Start
-            )
+            onClick = onBack,
+            modifier = Modifier.align(Alignment.Start)
         )
         Spacer(modifier = Modifier.size(8.dp))
         FlowRow {

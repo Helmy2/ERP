@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 
 class InventoryViewModel(
@@ -26,8 +25,6 @@ class InventoryViewModel(
         )
 
     fun handleEvent(event: InventoryEvent) {
-        when (event) {
-            InventoryEvent.NavigateToUnitOfMeasures -> navigator.navigate(Destination.UnitOfMeasures)
-        }
+
     }
 }
