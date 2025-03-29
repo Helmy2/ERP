@@ -11,7 +11,7 @@ import org.example.erp.features.inventory.data.model.RolePermissionsResponse
 import org.example.erp.features.inventory.data.model.StockLevelsResponse
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 import org.example.erp.features.inventory.data.model.UserRolesResponse
-import org.example.erp.features.inventory.data.model.WarehousesResponse
+import org.example.erp.features.inventory.data.model.WarehouseResponse
 import org.example.erp.features.inventory.domain.entity.AuditLogs
 import org.example.erp.features.inventory.domain.entity.InventoryTransactionDetails
 import org.example.erp.features.inventory.domain.entity.InventoryTransactions
@@ -69,7 +69,7 @@ fun ProductsResponse.toDomain(): Products = Products(
     updatedBy = updatedBy
 )
 
-fun WarehousesResponse.toDomain(): Warehouses = Warehouses(
+fun WarehouseResponse.toDomain(): Warehouses = Warehouses(
     id = id!!,
     code = code,
     name = name,
