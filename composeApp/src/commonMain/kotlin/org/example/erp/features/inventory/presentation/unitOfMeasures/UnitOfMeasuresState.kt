@@ -11,5 +11,5 @@ data class UnitOfMeasuresState(
     val description: String = "",
     val getDisplayNameForUser: suspend (String) -> String
 ) {
-    val isNewUnitOfMeasure: Boolean get() = selectedUnitOfMeasure == null
+    val isNew: Boolean get() = selectedUnitOfMeasure == null
 }

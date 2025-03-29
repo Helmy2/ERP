@@ -7,6 +7,7 @@ import org.example.erp.features.inventory.domain.entity.Warehouses
 
 interface InventoryReps {
     fun getAllUnitsOfMeasure(): Flow<List<UnitsOfMeasure>>
+
     suspend fun createUnitOfMeasure(
         code: String,
         name: String,
@@ -21,13 +22,14 @@ interface InventoryReps {
     ): Result<Unit>
 
     suspend fun deleteUnitOfMeasure(code: String): Result<Unit>
-    @OptIn(SupabaseExperimental::class)
+
     fun getAllWarehouse(): Flow<List<Warehouses>>
+
     suspend fun createWarehouse(
         code: String,
         name: String,
         capacity: Long?,
-        location: String?
+        location: String
     ): Result<Unit>
 
     suspend fun updateWarehouse(
@@ -35,7 +37,7 @@ interface InventoryReps {
         code: String,
         name: String,
         capacity: Long?,
-        location: String?
+        location: String
     ): Result<Unit>
 
     suspend fun deleteWarehouse(code: String): Result<Unit>

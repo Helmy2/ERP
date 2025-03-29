@@ -9,6 +9,4 @@ sealed interface UnitOfMeasuresEvent {
     data class UpdateCode(val code: String) : UnitOfMeasuresEvent
     data class UpdateName(val name: String) : UnitOfMeasuresEvent
     data class UpdateDescription(val description: String) : UnitOfMeasuresEvent
-
-    data object NavigateBack : UnitOfMeasuresEvent
 }

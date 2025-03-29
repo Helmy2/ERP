@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.example.erp.core.util.SupabaseConfig.UNIT_OF_MEASURE
 import org.example.erp.core.util.SupabaseConfig.WAREHOUSE
 import org.example.erp.core.util.performDataComparison
@@ -74,7 +76,7 @@ class InventoryRepsImpl(
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(UNIT_OF_MEASURE).insert(
-                buildMap {
+                buildJsonObject {
                     put(UnitsOfMeasureResponse::code.name, code)
                     put(UnitsOfMeasureResponse::name.name, name)
                     put(UnitsOfMeasureResponse::description.name, description)
@@ -88,7 +90,7 @@ class InventoryRepsImpl(
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(UNIT_OF_MEASURE).update(
-                buildMap {
+                buildJsonObject {
                     put(UnitsOfMeasureResponse::code.name, code)
                     put(UnitsOfMeasureResponse::name.name, name)
                     put(UnitsOfMeasureResponse::description.name, description)
@@ -145,11 +147,11 @@ class InventoryRepsImpl(
 
 
     override suspend fun createWarehouse(
-        code: String, name: String, capacity: Long?, location: String?
+        code: String, name: String, capacity: Long?, location: String
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(WAREHOUSE).insert(
-                buildMap {
+                buildJsonObject {
                     put(WarehouseResponse::code.name, code)
                     put(WarehouseResponse::name.name, name)
                     put(WarehouseResponse::capacity.name, capacity)
@@ -160,16 +162,17 @@ class InventoryRepsImpl(
     }
 
     override suspend fun updateWarehouse(
-        id: String, code: String, name: String, capacity: Long?, location: String?
+        id: String, code: String, name: String, capacity: Long?, location: String
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
-            supabaseClient.from(UNIT_OF_MEASURE).update(
-                buildMap {
+            supabaseClient.from(WAREHOUSE).update(
+                buildJsonObject {
                     put(WarehouseResponse::code.name, code)
                     put(WarehouseResponse::name.name, name)
                     put(WarehouseResponse::capacity.name, capacity)
                     put(WarehouseResponse::location.name, location)
-                }) {
+                }
+            ) {
                 filter {
                     WarehouseResponse::id eq id
                 }
@@ -181,7 +184,7 @@ class InventoryRepsImpl(
     override suspend fun deleteWarehouse(code: String): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(WAREHOUSE)
-                .delete { filter { UnitsOfMeasureResponse::code eq code } }
+                .delete { filter { WarehouseResponse::code eq code } }
             Unit
         }
     }

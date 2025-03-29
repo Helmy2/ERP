@@ -145,13 +145,13 @@ fun UnitOfMeasuresScreen(
                     onClick = {
                         onEvent(UnitOfMeasuresEvent.DeleteUnitOfMeasure)
                     },
-                    enabled = !state.isNewUnitOfMeasure && !state.loading,
+                    enabled = !state.isNew && !state.loading,
                 ) {
                     Text(stringResource(Res.string.delete))
                 }
                 Button(
                     onClick = {
-                        if (state.isNewUnitOfMeasure) {
+                        if (state.isNew) {
                             onEvent(UnitOfMeasuresEvent.CreateUnitOfMeasure)
                         } else {
                             onEvent(UnitOfMeasuresEvent.UpdateUnitOfMeasure)
@@ -161,7 +161,7 @@ fun UnitOfMeasuresScreen(
                 ) {
                     Text(
                         stringResource(
-                            if (state.isNewUnitOfMeasure) Res.string.create
+                            if (state.isNew) Res.string.create
                             else Res.string.update
                         )
                     )

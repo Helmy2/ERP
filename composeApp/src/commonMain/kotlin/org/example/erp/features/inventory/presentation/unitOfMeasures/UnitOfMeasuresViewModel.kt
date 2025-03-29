@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.CreateUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
@@ -31,19 +30,20 @@ class UnitOfMeasuresViewModel(
     private val createUnitOfMeasure: CreateUnitOfMeasureUseCase,
     private val deleteUnitOfMeasure: DeleteUnitOfMeasureUseCase,
     private val updateUnitOfMeasure: UpdateUnitOfMeasureUseCase,
-    private val navigator: Navigator,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
         UnitOfMeasuresState(
-        getDisplayNameForUser = { getDisplayName(it) }))
+            getDisplayNameForUser = { getDisplayName(it) })
+    )
     val state = _state.onStart {
         leadInit()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = UnitOfMeasuresState(
-            getDisplayNameForUser = { getDisplayName(it) }))
+            getDisplayNameForUser = { getDisplayName(it) })
+    )
 
     private fun leadInit() {
         viewModelScope.launch {
@@ -67,7 +67,6 @@ class UnitOfMeasuresViewModel(
             is UnitOfMeasuresEvent.UpdateDescription -> updateDescription(event.description)
             is UnitOfMeasuresEvent.UpdateName -> updateName(event.name)
             is UnitOfMeasuresEvent.SearchUnitOfMeasure -> findUnitOfMeasureByCode(event.code)
-            is UnitOfMeasuresEvent.NavigateBack -> navigator.navigateBack()
         }
     }
 
@@ -96,7 +95,6 @@ class UnitOfMeasuresViewModel(
                     name = "", description = "", selectedUnitOfMeasure = null, loading = false
                 )
             }
-
         } else {
             _state.update {
                 it.copy(
@@ -112,7 +110,7 @@ class UnitOfMeasuresViewModel(
     private fun updateUnitOfMeasure() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-           updateUnitOfMeasure(
+            updateUnitOfMeasure(
                 id = _state.value.selectedUnitOfMeasure!!.id,
                 code = _state.value.code,
                 name = _state.value.name,
@@ -121,7 +119,10 @@ class UnitOfMeasuresViewModel(
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_updated))
             }.onFailure {
-                snackbarManager.showErrorSnackbar(getString(Res.string.error_updating_unit_of_measure), it)
+                snackbarManager.showErrorSnackbar(
+                    getString(Res.string.error_updating_unit_of_measure),
+                    it
+                )
             }
             _state.update { it.copy(loading = false) }
         }
@@ -134,7 +135,10 @@ class UnitOfMeasuresViewModel(
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_deleted))
             }.onFailure {
-                snackbarManager.showErrorSnackbar(getString(Res.string.error_deleting_unit_of_measure), it)
+                snackbarManager.showErrorSnackbar(
+                    getString(Res.string.error_deleting_unit_of_measure),
+                    it
+                )
             }
         }
     }
@@ -150,7 +154,10 @@ class UnitOfMeasuresViewModel(
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_created))
             }.onFailure {
-                snackbarManager.showErrorSnackbar(getString(Res.string.error_creating_unit_of_measure), it)
+                snackbarManager.showErrorSnackbar(
+                    getString(Res.string.error_creating_unit_of_measure),
+                    it
+                )
             }
             _state.update { it.copy(loading = false) }
         }
