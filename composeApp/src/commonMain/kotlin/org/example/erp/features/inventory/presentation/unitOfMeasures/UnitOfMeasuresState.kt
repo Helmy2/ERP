@@ -9,6 +9,7 @@ data class UnitOfMeasuresState(
     val code: String = "",
     val name: String = "",
     val description: String = "",
+    val getDisplayNameForUser: suspend (String) -> String
 ) {
-    val isNewUnitOfMeasure: Boolean get() =  selectedUnitOfMeasure == null
+    val isNewUnitOfMeasure: Boolean get() = selectedUnitOfMeasure == null
 }

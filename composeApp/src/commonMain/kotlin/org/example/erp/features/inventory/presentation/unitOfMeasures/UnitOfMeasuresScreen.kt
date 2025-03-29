@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -73,13 +74,13 @@ fun UnitOfMeasuresScreen(
             modifier = Modifier.fillMaxHeight(.2f)
                 .verticalScroll(rememberScrollState())
         ) {
-            FlowRow() {
+            FlowRow {
                 state.unitsOfMeasureList.forEach {
                     Card(
                         modifier = Modifier.padding(8.dp)
                             .sizeIn(maxWidth = 140.dp, maxHeight = 70.dp),
                         onClick = {
-                            onEvent(UnitOfMeasuresEvent.UpdateCode(it.code))
+                            onEvent(UnitOfMeasuresEvent.SearchUnitOfMeasure(it.code))
                         }
                     ) {
                         Text(
@@ -99,7 +100,11 @@ fun UnitOfMeasuresScreen(
                     value = state.code,
                     onValueChange = { onEvent(UnitOfMeasuresEvent.UpdateCode(it)) },
                     label = stringResource(Res.string.code),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions {
+                        onEvent(UnitOfMeasuresEvent.SearchUnitOfMeasure(state.code))
+                        defaultKeyboardAction(ImeAction.Next)
+                    }
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 LabeledTextField(
@@ -121,12 +126,14 @@ fun UnitOfMeasuresScreen(
             VersionDetails(
                 sectionHeader = stringResource(Res.string.created_by),
                 modifierName = state.selectedUnitOfMeasure?.createdBy,
+                getDisplayNameForUser = state.getDisplayNameForUser,
                 modificationTimestamp = state.selectedUnitOfMeasure?.createdAt?.toLocalString(),
             )
             VersionDetails(
                 sectionHeader = stringResource(Res.string.updated_by),
                 modifierName = state.selectedUnitOfMeasure?.updatedBy,
-                modificationTimestamp = state.selectedUnitOfMeasure?.updatedAt?.toLocalString()
+                getDisplayNameForUser = state.getDisplayNameForUser,
+                modificationTimestamp = state.selectedUnitOfMeasure?.updatedAt?.toLocalString(),
             )
             Row(
                 modifier = Modifier.padding(8.dp).align(Alignment.End),
@@ -152,7 +159,12 @@ fun UnitOfMeasuresScreen(
                     },
                     enabled = !state.loading,
                 ) {
-                    Text(stringResource(if (state.isNewUnitOfMeasure) Res.string.create else Res.string.update))
+                    Text(
+                        stringResource(
+                            if (state.isNewUnitOfMeasure) Res.string.create
+                            else Res.string.update
+                        )
+                    )
                 }
             }
         }

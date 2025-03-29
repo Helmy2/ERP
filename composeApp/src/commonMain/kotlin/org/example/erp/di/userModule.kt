@@ -7,6 +7,7 @@ import org.example.erp.features.user.data.exception.AuthExceptionMapper
 import org.example.erp.features.user.data.repository.UserRepoImpl
 import org.example.erp.features.user.domain.repository.UserRepo
 import org.example.erp.features.user.domain.usecase.CurrentUserFlowUseCase
+import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.example.erp.features.user.domain.usecase.IsUserLongedInFlowUseCase
 import org.example.erp.features.user.domain.usecase.IsUserLongedInUseCase
 import org.example.erp.features.user.domain.usecase.LoginUseCase
@@ -39,6 +40,7 @@ val userModule = module {
     factory { CurrentUserFlowUseCase(get()) }
     factory { ChangeLanguageUseCase(get()) }
     factory { GetLanguageUseCase(get()) }
+    factory { GetDisplayNameUseCase(get()) }
 
     viewModel { LoginViewModel(get(), get(), get(), get()) }
     viewModel { RegisterViewModel(get(), get(), get()) }

@@ -19,4 +19,5 @@ interface UserRepo {
     suspend fun signOut(): Result<Unit>
     val currentUser: Flow<Result<User?>>
     suspend fun updateDisplayName(name: String): Result<Unit>
+    suspend fun getDisplayName(id: String?): String
 }

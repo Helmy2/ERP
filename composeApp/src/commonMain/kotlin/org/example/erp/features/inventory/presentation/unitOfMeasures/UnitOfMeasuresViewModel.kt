@@ -2,6 +2,13 @@ package org.example.erp.features.inventory.presentation.unitOfMeasures
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import erp.composeapp.generated.resources.Res
+import erp.composeapp.generated.resources.error_creating_unit_of_measure
+import erp.composeapp.generated.resources.error_deleting_unit_of_measure
+import erp.composeapp.generated.resources.error_updating_unit_of_measure
+import erp.composeapp.generated.resources.unit_of_measure_created
+import erp.composeapp.generated.resources.unit_of_measure_deleted
+import erp.composeapp.generated.resources.unit_of_measure_updated
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -10,27 +17,43 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.snackbar.SnackbarManager
-import org.example.erp.features.inventory.domain.repository.InventoryReps
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.CreateUnitOfMeasureUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetAllUnitsOfMeasureUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.UpdateUnitOfMeasureUseCase
+import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
+import org.jetbrains.compose.resources.getString
 
 class UnitOfMeasuresViewModel(
-    private val repository: InventoryReps,
+    private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
-    private val navigator: Navigator
+    private val getAllUnitsOfMeasure: GetAllUnitsOfMeasureUseCase,
+    private val createUnitOfMeasure: CreateUnitOfMeasureUseCase,
+    private val deleteUnitOfMeasure: DeleteUnitOfMeasureUseCase,
+    private val updateUnitOfMeasure: UpdateUnitOfMeasureUseCase,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(UnitOfMeasuresState())
+    private val _state = MutableStateFlow(
+        UnitOfMeasuresState(
+        getDisplayNameForUser = { getDisplayName(it) }))
     val state = _state.onStart {
         leadInit()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = UnitOfMeasuresState()
-    )
+        initialValue = UnitOfMeasuresState(
+            getDisplayNameForUser = { getDisplayName(it) }))
 
     private fun leadInit() {
         viewModelScope.launch {
-            repository.getAllUnitsOfMeasure().collect { list ->
-                _state.update { it.copy(unitsOfMeasureList = list.sortedBy { measure -> measure.code }, loading = false) }
+            getAllUnitsOfMeasure().collect { list ->
+                _state.update {
+                    it.copy(
+                        unitsOfMeasureList = list.sortedBy { measure -> measure.code },
+                        loading = false
+                    )
+                }
             }
         }
     }
@@ -43,7 +66,8 @@ class UnitOfMeasuresViewModel(
             is UnitOfMeasuresEvent.UpdateCode -> updateCode(event.code)
             is UnitOfMeasuresEvent.UpdateDescription -> updateDescription(event.description)
             is UnitOfMeasuresEvent.UpdateName -> updateName(event.name)
-            UnitOfMeasuresEvent.NavigateBack -> navigator.navigateBack()
+            is UnitOfMeasuresEvent.SearchUnitOfMeasure -> findUnitOfMeasureByCode(event.code)
+            is UnitOfMeasuresEvent.NavigateBack -> navigator.navigateBack()
         }
     }
 
@@ -56,29 +80,31 @@ class UnitOfMeasuresViewModel(
     }
 
     private fun updateCode(code: String) {
-        viewModelScope.launch {
-            _state.update { it.copy(code = code, loading = true) }
+        _state.update { it.copy(code = code) }
+    }
 
-            val unitsOfMeasure = _state.value.unitsOfMeasureList.firstOrNull { item ->
-                item.code == code
+    private fun findUnitOfMeasureByCode(code: String) {
+        _state.update { it.copy(code = code, loading = true) }
+
+        val unitsOfMeasure = _state.value.unitsOfMeasureList.firstOrNull { item ->
+            item.code == code
+        }
+
+        if (unitsOfMeasure == null) {
+            _state.update {
+                it.copy(
+                    name = "", description = "", selectedUnitOfMeasure = null, loading = false
+                )
             }
 
-            if (unitsOfMeasure == null) {
-                _state.update {
-                    it.copy(
-                        name = "", description = "", selectedUnitOfMeasure = null, loading = false
-                    )
-                }
-
-            } else {
-                _state.update {
-                    it.copy(
-                        name = unitsOfMeasure.name,
-                        description = unitsOfMeasure.description ?: "",
-                        selectedUnitOfMeasure = unitsOfMeasure,
-                        loading = false
-                    )
-                }
+        } else {
+            _state.update {
+                it.copy(
+                    name = unitsOfMeasure.name,
+                    description = unitsOfMeasure.description ?: "",
+                    selectedUnitOfMeasure = unitsOfMeasure,
+                    loading = false
+                )
             }
         }
     }
@@ -86,16 +112,16 @@ class UnitOfMeasuresViewModel(
     private fun updateUnitOfMeasure() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            repository.updateUnitOfMeasure(
+           updateUnitOfMeasure(
                 id = _state.value.selectedUnitOfMeasure!!.id,
                 code = _state.value.code,
                 name = _state.value.name,
                 description = _state.value.description,
             ).onSuccess {
                 clearState()
-                snackbarManager.showSnackbar("Unit of measure updated")
+                snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_updated))
             }.onFailure {
-                snackbarManager.showErrorSnackbar("Error updating unit of measure", it)
+                snackbarManager.showErrorSnackbar(getString(Res.string.error_updating_unit_of_measure), it)
             }
             _state.update { it.copy(loading = false) }
         }
@@ -104,11 +130,11 @@ class UnitOfMeasuresViewModel(
     private fun deleteUnitOfMeasure() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            repository.deleteUnitOfMeasure(_state.value.code).onSuccess {
+            deleteUnitOfMeasure(_state.value.code).onSuccess {
                 clearState()
-                snackbarManager.showSnackbar("Unit of measure deleted")
+                snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_deleted))
             }.onFailure {
-                snackbarManager.showErrorSnackbar("Error deleting unit of measure", it)
+                snackbarManager.showErrorSnackbar(getString(Res.string.error_deleting_unit_of_measure), it)
             }
         }
     }
@@ -116,21 +142,21 @@ class UnitOfMeasuresViewModel(
     private fun createUnitOfMeasure() {
         viewModelScope.launch {
             _state.update { it.copy(loading = true) }
-            repository.createUnitOfMeasure(
+            createUnitOfMeasure(
                 code = _state.value.code,
                 name = _state.value.name,
                 description = _state.value.description
             ).onSuccess {
                 clearState()
-                snackbarManager.showSnackbar("Unit of measure created")
+                snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_created))
             }.onFailure {
-                snackbarManager.showErrorSnackbar("Error creating unit of measure", it)
+                snackbarManager.showErrorSnackbar(getString(Res.string.error_creating_unit_of_measure), it)
             }
             _state.update { it.copy(loading = false) }
         }
     }
 
-    private fun clearState(){
+    private fun clearState() {
         _state.update {
             it.copy(
                 loading = false,
