@@ -15,17 +15,13 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.example.erp.core.domain.entity.DataChange
-import org.example.erp.core.util.DISPLAY_NAME_KEY
 import org.example.erp.core.util.SupabaseConfig.UNIT_OF_MEASURE
-import org.example.erp.core.util.SupabaseConfig.USER_ROLE
-import org.example.erp.features.inventory.data.exception.UnitOfMeasureNotFoundException
+import org.example.erp.core.util.performDataComparison
 import org.example.erp.features.inventory.data.local.dao.InventoryDao
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
 import org.example.erp.features.inventory.domain.mapper.toDomain
 import org.example.erp.features.inventory.domain.repository.InventoryReps
-import org.example.erp.features.user.domain.entity.User
 
 class InventoryRepsImpl(
     private val supabaseClient: SupabaseClient,
@@ -41,26 +37,23 @@ class InventoryRepsImpl(
             ).selectAsFlow(
                 UnitsOfMeasureResponse::id
             ).onEach {
-                val data = performDataComparison(
-                    localData = inventoryDao.getAll().first(), remoteData = it
-                )
-                inventoryDao.delete(data.toDelete)
-                inventoryDao.insert(
-                    data.toInsert.map { response ->
-                        response.copy(
-                            createdBy = if (response.createdBy != null) getUserById(response.createdBy) else "",
-                            updatedBy = if (response.updatedBy != null) getUserById(response.updatedBy) else "",
-                        )
+                println("InventoryRepsImpl: $it")
+                performDataComparison(
+                    localData = inventoryDao.getAll().first(),
+                    remoteData = it,
+                    keySelector = { response -> response.id },
+                    areItemsDifferent = { local, remote ->
+                        local.code != remote.code ||
+                                local.name != remote.name ||
+                                local.description != remote.description
                     },
-                )
-                inventoryDao.insert(
-                    data.toUpdate.map { response ->
-                        response.copy(
-                            createdBy = if (response.createdBy != null) getUserById(response.createdBy) else "",
-                            updatedBy = if (response.updatedBy != null) getUserById(response.updatedBy) else "",
-                        )
-                    },
-                )
+                ).apply {
+                    println(
+                        "InventoryRepsImpl: toDelete: $toDelete, toInsert: $toInsert"
+                    )
+                    inventoryDao.delete(toDelete)
+                    inventoryDao.insert(toInsert)
+                }
             }.catch {
                 println("Exception in getAllUnitsOfMeasure: $it")
             }.launchIn(this)
@@ -76,55 +69,6 @@ class InventoryRepsImpl(
         }
     }
 
-    private fun performDataComparison(
-        localData: List<UnitsOfMeasureResponse>, remoteData: List<UnitsOfMeasureResponse>
-    ): DataChange<UnitsOfMeasureResponse> {
-        // Create maps for efficient lookups
-        val localMap = localData.associateBy { it.id }
-        val remoteMap = remoteData.associateBy { it.id }
-
-        // Find elements that need to be deleted (present in local but not in remote)
-        val toDelete = localData.filter { !remoteMap.containsKey(it.id) }
-
-        // Find elements that need to be inserted (present in remote but not in local)
-        val toInsert = remoteData.filter { !localMap.containsKey(it.id) }
-
-        // Find elements that need to be updated (present in both but different content)
-        val toUpdate = remoteData.filter { remoteItem ->
-            localMap[remoteItem.id]?.let { localItem ->
-                // Compare all fields except auto-managed timestamps
-                remoteItem.code != localItem.code || remoteItem.name != localItem.name || remoteItem.description != localItem.description
-            } ?: false
-        }
-
-        return DataChange(
-            toDelete = toDelete, toInsert = toInsert, toUpdate = toUpdate
-        )
-    }
-
-
-    private suspend fun getUserById(id: String): String {
-        val name = supabaseClient.from(USER_ROLE).select {
-            filter { User::id eq id }
-        }.decodeSingle<Map<String, String?>>()
-
-        return name[DISPLAY_NAME_KEY] ?: ""
-    }
-
-    override suspend fun getUnitOfMeasureByCode(code: String): Result<UnitsOfMeasure> =
-        withContext(dispatcher) {
-            runCatching {
-                val result = supabaseClient.from(UNIT_OF_MEASURE)
-                    .select { filter { UnitsOfMeasureResponse::code eq code } }
-                    .decodeSingleOrNull<UnitsOfMeasureResponse>()
-
-                val unit = result?.toDomain()?.copy(
-                    createdBy = getUserById(result.createdBy!!),
-                    updatedBy = result.updatedBy?.let { userId -> getUserById(userId) })
-
-                unit ?: throw UnitOfMeasureNotFoundException()
-            }
-        }
 
     override suspend fun createUnitOfMeasure(
         code: String, name: String, description: String
@@ -166,3 +110,4 @@ class InventoryRepsImpl(
         }
     }
 }
+

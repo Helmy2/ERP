@@ -27,11 +27,10 @@ class UserRepoImpl(
     private val dispatcher: CoroutineDispatcher,
 ) : UserRepo {
 
-
     override val currentUser: Flow<Result<User?>> = supabaseClient.auth.sessionStatus.map {
         try {
             val user = supabaseClient.auth.currentUserOrNull()?.toDomainUser(
-                getUserName() ?: ""
+                getDisplayName(supabaseClient.auth.currentUserOrNull()?.id ?: "")
             )
             Result.success(user)
         } catch (e: Exception) {
@@ -41,16 +40,13 @@ class UserRepoImpl(
         emit(Result.failure(exceptionMapper.map(e)))
     }
 
-    private suspend fun getUserName(): String? {
-        supabaseClient.auth.currentUserOrNull()?.id?.let {
-            val name = supabaseClient.from(USER_ROLE)
-                .select {
-                    filter { User::id eq it }
-                }.decodeSingle<Map<String, String?>>()
+    override suspend fun getDisplayName(id: String?): String {
+        val name = supabaseClient.from(USER_ROLE)
+            .select {
+                filter { User::id eq id }
+            }.decodeSingle<Map<String, String?>>()
 
-            return name[DISPLAY_NAME_KEY]
-        }
-        return null
+        return name[DISPLAY_NAME_KEY] ?: ""
     }
 
 
@@ -71,7 +67,7 @@ class UserRepoImpl(
                         buildJsonObject {
                             put(DISPLAY_NAME_KEY, name)
                         },
-                    ){
+                    ) {
                         filter {
                             User::id eq it
                         }

@@ -6,7 +6,6 @@ import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
 
 interface InventoryReps {
     fun getAllUnitsOfMeasure(): Flow<List<UnitsOfMeasure>>
-    suspend fun getUnitOfMeasureByCode(code: String): Result<UnitsOfMeasure>
     suspend fun createUnitOfMeasure(
         code: String,
         name: String,

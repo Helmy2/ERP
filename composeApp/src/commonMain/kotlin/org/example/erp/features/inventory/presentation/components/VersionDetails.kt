@@ -5,6 +5,11 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import erp.composeapp.generated.resources.Res
@@ -17,12 +22,23 @@ fun VersionDetails(
     sectionHeader: String,
     modifierName: String?,
     modificationTimestamp: String?,
-    modifier: Modifier = Modifier
+    getDisplayNameForUser: suspend (String) -> String,
+    modifier: Modifier = Modifier,
 ) {
+    var displayName by remember {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(modifierName){
+        if (modifierName != null) {
+            displayName = getDisplayNameForUser(modifierName)
+        }
+    }
+
     AnimatedVisibility(modifierName != null && modificationTimestamp != null, modifier) {
         FlowRow {
             Text(
-                "$sectionHeader: $modifierName",
+                "$sectionHeader: $displayName",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
