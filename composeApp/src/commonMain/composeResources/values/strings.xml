@@ -63,6 +63,17 @@
     <string name="error_deleting_unit_of_measure">Error deleting unit of measure</string>
     <string name="unit_of_measure_created">Unit of measure created</string>
     <string name="error_creating_unit_of_measure">Error creating unit of measure</string>
+    <string name="warehouses">Warehouses</string>
+    <string name="capacity">Capacity</string>
+    <string name="location">Location</string>
+
+    <string name="warehouse_updated">Warehouse updated</string>
+    <string name="error_updating_warehouse">Error updating warehouse</string>
+    <string name="warehouse_deleted">Warehouse deleted</string>
+    <string name="error_deleting_warehouse">Error deleting warehouse</string>
+    <string name="warehouse_created">Warehouse created</string>
+    <string name="error_creating_warehouse">Error creating warehouse</string>
+
 
 
 </resources>

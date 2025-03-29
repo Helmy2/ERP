@@ -21,8 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.unit_of_measures
+import erp.composeapp.generated.resources.warehouses
 import org.example.erp.features.inventory.domain.entity.InventoryDestination
 import org.example.erp.features.inventory.presentation.unitOfMeasures.UnitOfMeasuresRoute
+import org.example.erp.features.inventory.presentation.warehouses.WarehouseRoute
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,6 +66,23 @@ fun InventoryScreen(
                             style = MaterialTheme.typography.headlineSmall
                         )
                     }
+                    Card(
+                        onClick = {
+                            scaffoldNavigator.navigateTo(
+                                ListDetailPaneScaffoldRole.Detail,
+                                InventoryDestination.Warehouses
+                            )
+                        },
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+                        Text(
+                            stringResource(Res.string.warehouses),
+                            modifier = Modifier.padding(16.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
                 }
             }
         },
@@ -72,6 +91,16 @@ fun InventoryScreen(
                 when (scaffoldNavigator.currentDestination?.content) {
                     InventoryDestination.UnitOfMeasures -> {
                         UnitOfMeasuresRoute(
+                            onBack = {
+                                scaffoldNavigator.navigateBack()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
+                                .padding(16.dp)
+                        )
+                    }
+                    InventoryDestination.Warehouses -> {
+                        WarehouseRoute(
                             onBack = {
                                 scaffoldNavigator.navigateBack()
                             },
