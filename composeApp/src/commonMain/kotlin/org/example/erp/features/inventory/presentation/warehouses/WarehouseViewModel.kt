@@ -50,13 +50,20 @@ class WarehouseViewModel(
 
     private fun leadInit() {
         viewModelScope.launch {
-            getAllWarehouse().collect { list ->
-                _state.update {
-                    it.copy(
-                        warehousesList = list.sortedBy { measure -> measure.code },
-                        loading = false
-                    )
-                }
+            getAllWarehouse().collect { result ->
+                result.fold(
+                    onSuccess = { list ->
+                        _state.update {
+                            it.copy(
+                                warehousesList = list.sortedBy { warehouse -> warehouse.code },
+                                loading = false )
+                        }
+                    },
+                    onFailure = {
+                        _state.update { it.copy(loading = false) }
+                        println("Exception in getAllWarehouse: $it")
+                    }
+                )
             }
         }
     }

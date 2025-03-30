@@ -6,7 +6,7 @@ import org.example.erp.features.inventory.domain.entity.Warehouses
 
 
 interface InventoryReps {
-    fun getAllUnitsOfMeasure(): Flow<List<UnitsOfMeasure>>
+    fun getAllUnitsOfMeasure(): Flow<Result<List<UnitsOfMeasure>>>
 
     suspend fun createUnitOfMeasure(
         code: String,
@@ -23,7 +23,7 @@ interface InventoryReps {
 
     suspend fun deleteUnitOfMeasure(code: String): Result<Unit>
 
-    fun getAllWarehouse(): Flow<List<Warehouses>>
+    fun getAllWarehouse(): Flow<Result<List<Warehouses>>>
 
     suspend fun createWarehouse(
         code: String,

@@ -1,22 +1,20 @@
 package org.example.erp.features.inventory.presentation.unitOfMeasures
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +34,7 @@ import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.update
 import erp.composeapp.generated.resources.updated_by
 import org.example.erp.core.presentation.components.BackButton
+import org.example.erp.core.presentation.components.ItemGrid
 import org.example.erp.core.presentation.components.LabeledTextField
 import org.example.erp.core.util.toLocalString
 import org.example.erp.features.inventory.presentation.components.VersionDetails
@@ -60,41 +59,22 @@ fun UnitOfMeasuresScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
+    Box(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        BackButton(
-            onClick = onBack,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        AnimatedVisibility(
-            state.unitsOfMeasureList.isNotEmpty(),
-            modifier = Modifier.fillMaxHeight(.2f)
-                .verticalScroll(rememberScrollState())
-        ) {
-            FlowRow {
-                state.unitsOfMeasureList.forEach {
-                    Card(
-                        modifier = Modifier.padding(8.dp)
-                            .sizeIn(maxWidth = 140.dp, maxHeight = 70.dp),
-                        onClick = {
-                            onEvent(UnitOfMeasuresEvent.SearchUnitOfMeasure(it.code))
-                        }
-                    ) {
-                        Text(
-                            "${it.code}: ${it.name}",
-                            modifier.padding(8.dp)
-                        )
-                    }
-                }
-            }
-        }
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.verticalScroll(rememberScrollState())
+            modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)
         ) {
+            ItemGrid(
+                list = state.unitsOfMeasureList,
+                onItemClick = { onEvent(UnitOfMeasuresEvent.SearchUnitOfMeasure(it.code)) },
+                labelProvider ={ "${it.code} - ${it.name}" },
+                isSelected = { it.code == state.code },
+                modifier = Modifier.heightIn(max = 300.dp)
+            )
+
             FlowRow {
                 LabeledTextField(
                     value = state.code,
@@ -168,6 +148,10 @@ fun UnitOfMeasuresScreen(
                 }
             }
         }
+        BackButton(
+            onClick = onBack,
+            modifier = Modifier.padding(16.dp).align(Alignment.TopStart)
+        )
     }
 }
 

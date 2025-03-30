@@ -47,13 +47,21 @@ class UnitOfMeasuresViewModel(
 
     private fun leadInit() {
         viewModelScope.launch {
-            getAllUnitsOfMeasure().collect { list ->
-                _state.update {
-                    it.copy(
-                        unitsOfMeasureList = list.sortedBy { measure -> measure.code },
-                        loading = false
-                    )
-                }
+            getAllUnitsOfMeasure().collect { result ->
+                result.fold(
+                    onSuccess = { list ->
+                        _state.update {
+                            it.copy(
+                                unitsOfMeasureList = list.sortedBy { measure -> measure.code },
+                                loading = false
+                            )
+                        }
+                    },
+                    onFailure = {
+                        _state.update { it.copy(loading = false) }
+                        println("Exception in getAllUnitsOfMeasure: $it")
+                    }
+                )
             }
         }
     }

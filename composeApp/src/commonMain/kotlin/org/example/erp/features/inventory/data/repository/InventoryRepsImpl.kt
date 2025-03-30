@@ -37,7 +37,7 @@ class InventoryRepsImpl(
 ) : InventoryReps {
 
     @OptIn(SupabaseExperimental::class)
-    override fun getAllUnitsOfMeasure(): Flow<List<UnitsOfMeasure>> = channelFlow {
+    override fun getAllUnitsOfMeasure(): Flow<Result<List<UnitsOfMeasure>>> = channelFlow {
         launch {
             supabaseClient.from(
                 UNIT_OF_MEASURE
@@ -56,7 +56,7 @@ class InventoryRepsImpl(
                     inventoryDao.insert(toInsert)
                 }
             }.catch {
-                println("Exception in getAllUnitsOfMeasure: $it")
+                trySend(Result.failure(it))
             }.launchIn(this)
         }
         launch {
@@ -64,8 +64,10 @@ class InventoryRepsImpl(
                 it.map { entity ->
                     entity.toDomain()
                 }
+            }.catch {
+                trySend(Result.failure(it))
             }.collectLatest {
-                trySend(it)
+                trySend(Result.success(it))
             }
         }
     }
@@ -112,7 +114,7 @@ class InventoryRepsImpl(
     }
 
     @OptIn(SupabaseExperimental::class)
-    override fun getAllWarehouse(): Flow<List<Warehouses>> = channelFlow {
+    override fun getAllWarehouse(): Flow<Result<List<Warehouses>>> = channelFlow {
         launch {
             supabaseClient.from(
                 WAREHOUSE
@@ -131,7 +133,7 @@ class InventoryRepsImpl(
                     warehouseDao.insert(toInsert)
                 }
             }.catch {
-                println("Exception in getAllWarehouse: $it")
+                trySend(Result.failure(it))
             }.launchIn(this)
         }
         launch {
@@ -139,8 +141,10 @@ class InventoryRepsImpl(
                 it.map { entity ->
                     entity.toDomain()
                 }
+            }.catch {
+                trySend(Result.failure(it))
             }.collectLatest {
-                trySend(it)
+                trySend(Result.success(it))
             }
         }
     }
@@ -171,8 +175,7 @@ class InventoryRepsImpl(
                     put(WarehouseResponse::name.name, name)
                     put(WarehouseResponse::capacity.name, capacity)
                     put(WarehouseResponse::location.name, location)
-                }
-            ) {
+                }) {
                 filter {
                     WarehouseResponse::id eq id
                 }
@@ -183,8 +186,7 @@ class InventoryRepsImpl(
 
     override suspend fun deleteWarehouse(code: String): Result<Unit> = withContext(dispatcher) {
         runCatching {
-            supabaseClient.from(WAREHOUSE)
-                .delete { filter { WarehouseResponse::code eq code } }
+            supabaseClient.from(WAREHOUSE).delete { filter { WarehouseResponse::code eq code } }
             Unit
         }
     }
