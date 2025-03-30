@@ -1,5 +1,7 @@
 package org.example.erp.features.inventory.presentation.inventory
 
+import org.example.erp.features.inventory.domain.entity.InventoryDestination
+
 data class InventoryState(
-    val temp: String = "temp"
+    val selectedDestination: InventoryDestination? = null,
 )

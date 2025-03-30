@@ -1,30 +1,24 @@
 package org.example.erp.features.inventory.presentation.inventory
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import org.example.erp.core.domain.navigation.Navigator
+import kotlinx.coroutines.flow.update
+import org.example.erp.features.inventory.domain.entity.InventoryDestination
 
-class InventoryViewModel(
-    private val navigator: Navigator,
-) : ViewModel() {
+class InventoryViewModel : ViewModel() {
 
-    private val _state = MutableStateFlow(InventoryState())
+    private val _state = MutableStateFlow(
+        InventoryState()
+    )
     val state = _state
-        .onStart {
-            /** Load initial data here **/
-
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = InventoryState()
-        )
 
     fun handleEvent(event: InventoryEvent) {
+        when (event) {
+            is InventoryEvent.UpdateSelectDestination -> updateSelectDestination(event.destination)
+        }
+    }
 
+    private fun updateSelectDestination(destination: InventoryDestination) {
+        _state.update { it.copy(selectedDestination = destination) }
     }
 }

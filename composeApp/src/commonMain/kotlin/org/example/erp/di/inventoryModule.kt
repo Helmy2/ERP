@@ -47,7 +47,7 @@ val inventoryModule = module {
     factory { UpdateWarehouseUseCase(get()) }
     factory { DeleteWarehouseUseCase(get()) }
 
-    viewModel { InventoryViewModel(get()) }
+    viewModel { InventoryViewModel() }
     viewModel { UnitOfMeasuresViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get()) }
 }
