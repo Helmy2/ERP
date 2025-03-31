@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="login">تسجيل الدخول</string>
-    <string name="register">تسجيل</string>
-    <string name="welcome_back">أهلاً بعودتك</string>
-    <string name="login_to_your_account">سجل الدخول إلى حسابك</string>
+    <string name="register">اشتراك</string>
+    <string name="welcome_back">مرحباً بعودتك</string>
+    <string name="login_to_your_account">تسجيل الدخول إلى حسابك</string>
     <string name="create_account">إنشاء حساب</string>
     <string name="already_have_account">هل لديك حساب بالفعل؟</string>
     <string name="no_account">ليس لديك حساب؟</string>
@@ -12,17 +11,24 @@
     <string name="name">الاسم</string>
     <string name="email">البريد الإلكتروني</string>
     <string name="password">كلمة المرور</string>
-    <string name="theme">المظهر</string>
+    <string name="theme">السمة</string>
     <string name="dark_mode">الوضع الداكن</string>
     <string name="light_mode">الوضع الفاتح</string>
-    <string name="system_default">افتراضي النظام</string>
-
+    <string name="system_default">الوضع الافتراضي للنظام</string>
     <string name="update_name">تحديث الاسم</string>
     <string name="cancel">إلغاء</string>
     <string name="confirm">تأكيد</string>
     <string name="language">اللغة</string>
     <string name="english">الإنجليزية</string>
     <string name="arabic">العربية</string>
+    <string name="show_password">إظهار كلمة المرور</string>
+    <string name="hide_password">إخفاء كلمة المرور</string>
+    <string name="back_button">رجوع</string>
+    <string name="create">إنشاء</string>
+    <string name="update">تحديث</string>
+    <string name="delete">حذف</string>
+    <string name="code">الرمز</string>
+    <string name="description">الوصف</string>
 
     <string name="error_invalid_email">عنوان بريد إلكتروني غير صالح</string>
     <string name="error_invalid_password">كلمة مرور غير صالحة</string>
@@ -31,13 +37,10 @@
     <string name="error_name_required">الاسم مطلوب</string>
 
     <string name="password_requirement_length">8 أحرف على الأقل</string>
-    <string name="password_requirement_uppercase">تحتوي على حرف كبير</string>
-    <string name="password_requirement_special">تحتوي على حرف خاص</string>
-    <string name="requirement_met">تم استيفاء المتطلب</string>
-    <string name="requirement_not_met">لم يتم استيفاء المتطلب</string>
-
-    <string name="show_password">إظهار كلمة المرور</string>
-    <string name="hide_password">إخفاء كلمة المرور</string>
+    <string name="password_requirement_uppercase">يحتوي على حرف كبير</string>
+    <string name="password_requirement_special">يحتوي على حرف خاص</string>
+    <string name="requirement_met">تم استيفاء المتطلبات</string>
+    <string name="requirement_not_met">لم يتم استيفاء المتطلبات</string>
 
     <string name="create_account_success">تحقق من بريدك الإلكتروني لتأكيد حسابك</string>
     <string name="logged_out_success">تم تسجيل الخروج بنجاح</string>
@@ -49,14 +52,8 @@
     <string name="updated_by">تم التحديث بواسطة</string>
     <string name="created_by">تم الإنشاء بواسطة</string>
     <string name="at">في</string>
-    <string name="create">إنشاء</string>
-    <string name="update">تحديث</string>
-    <string name="delete">حذف</string>
-    <string name="code">الرمز</string>
-    <string name="description">الوصف</string>
-    <string name="back_button">زر الرجوع</string>
-    <string name="unit_of_measures">وحدات القياس</string>
 
+    <string name="unit_of_measures">وحدات القياس</string>
     <string name="unit_of_measure_updated">تم تحديث وحدة القياس</string>
     <string name="error_updating_unit_of_measure">خطأ في تحديث وحدة القياس</string>
     <string name="unit_of_measure_deleted">تم حذف وحدة القياس</string>
@@ -66,12 +63,16 @@
     <string name="warehouses">المستودعات</string>
     <string name="capacity">السعة</string>
     <string name="location">الموقع</string>
-
     <string name="warehouse_updated">تم تحديث المستودع</string>
     <string name="error_updating_warehouse">خطأ في تحديث المستودع</string>
     <string name="warehouse_deleted">تم حذف المستودع</string>
     <string name="error_deleting_warehouse">خطأ في حذف المستودع</string>
     <string name="warehouse_created">تم إنشاء المستودع</string>
     <string name="error_creating_warehouse">خطأ في إنشاء المستودع</string>
-
+    <string name="category_updated">تم تحديث الفئة بنجاح</string>
+    <string name="error_updating_category">خطأ في تحديث الفئة</string>
+    <string name="category_deleted">تم حذف الفئة بنجاح</string>
+    <string name="error_deleting_category">خطأ في حذف الفئة</string>
+    <string name="category_created">تم إنشاء الفئة بنجاح</string>
+    <string name="error_creating_category">خطأ في إنشاء الفئة</string>
 </resources>

@@ -38,16 +38,18 @@ fun UnitsOfMeasureResponse.toDomain(): UnitsOfMeasure = UnitsOfMeasure(
     updatedBy = updatedBy
 )
 
-fun CategoryResponse.toDomain(children: List<Category>): Category = Category(
-    id = id,
-    code = code,
-    name = name,
-    children = children,
-    createdAt = createdAt!!,
-    updatedAt = updatedAt,
-    createdBy = createdBy!!,
-    updatedBy = updatedBy
-)
+fun CategoryResponse.toDomain(children: List<Category>, parentCategory: Category?): Category =
+    Category(
+        id = id,
+        code = code,
+        name = name,
+        children = children,
+        parentCategory = parentCategory,
+        createdAt = createdAt!!,
+        updatedAt = updatedAt,
+        createdBy = createdBy!!,
+        updatedBy = updatedBy
+    )
 
 fun ProductsResponse.toDomain(): Products = Products(
     id = id!!,
@@ -70,7 +72,7 @@ fun ProductsResponse.toDomain(): Products = Products(
 )
 
 fun WarehouseResponse.toDomain(): Warehouses = Warehouses(
-    id = id!!,
+    id = id,
     code = code,
     name = name,
     location = location.orEmpty(),

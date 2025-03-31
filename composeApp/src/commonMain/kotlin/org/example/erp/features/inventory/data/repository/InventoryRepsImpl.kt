@@ -223,7 +223,10 @@ class InventoryRepsImpl(
             categoryDao.getAll().map { list ->
                 val categoryResponses = list.filter { it.parentCategoryId == null }
                 categoryResponses.map {
-                    it.toDomain(getCategoriesChildren(it, list))
+                    it.toDomain(
+                        children = getCategoriesChildren(it, list),
+                        parentCategory = getCategoryParent(it, list),
+                    )
                 }
             }.catch {
                 trySend(Result.failure(it))
@@ -234,11 +237,25 @@ class InventoryRepsImpl(
     }
 
     private fun getCategoriesChildren(
-        category: CategoryResponse,
-        categories: List<CategoryResponse>
+        category: CategoryResponse, categories: List<CategoryResponse>
     ): List<Category> {
         val children = categories.filter { it.parentCategoryId == category.id }
-        return children.map { it.toDomain(getCategoriesChildren(it, categories)) }
+        return children.map {
+            it.toDomain(
+                getCategoriesChildren(it, categories),
+                getCategoryParent(it, categories)
+            )
+        }
+    }
+
+    private fun getCategoryParent(
+        category: CategoryResponse, categories: List<CategoryResponse>
+    ): Category? {
+        val parent = categories.firstOrNull { it.id == category.parentCategoryId }
+        return parent?.toDomain(
+            getCategoriesChildren(parent, categories),
+            getCategoryParent(parent, categories)
+        )
     }
 
 

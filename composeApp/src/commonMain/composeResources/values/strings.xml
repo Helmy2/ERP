@@ -6,7 +6,7 @@
     <string name="create_account">Create Account</string>
     <string name="already_have_account">Already have an account?</string>
     <string name="no_account">Don't have an account?</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Log Out</string>
 
     <string name="name">Name</string>
     <string name="email">Email</string>
@@ -15,14 +15,20 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="light_mode">Light Mode</string>
     <string name="system_default">System Default</string>
-
-
     <string name="update_name">Update Name</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
     <string name="language">Language</string>
     <string name="english">English</string>
     <string name="arabic">Arabic</string>
+    <string name="show_password">Show Password</string>
+    <string name="hide_password">Hide Password</string>
+    <string name="back_button">Back</string>
+    <string name="create">Create</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
+    <string name="code">Code</string>
+    <string name="description">Description</string>
 
     <string name="error_invalid_email">Invalid email address</string>
     <string name="error_invalid_password">Invalid password</string>
@@ -36,9 +42,6 @@
     <string name="requirement_met">Requirement met</string>
     <string name="requirement_not_met">Requirement not met</string>
 
-    <string name="show_password">Show password</string>
-    <string name="hide_password">Hide password</string>
-
     <string name="create_account_success">Check your email to confirm your account</string>
     <string name="logged_out_success">Logged out successfully</string>
 
@@ -49,14 +52,8 @@
     <string name="updated_by">Updated by</string>
     <string name="created_by">Created by</string>
     <string name="at">at</string>
-    <string name="create">Create</string>
-    <string name="update">Update</string>
-    <string name="delete">Delete</string>
-    <string name="code">Code</string>
-    <string name="description">Description</string>
-    <string name="back_button">Back button</string>
-    <string name="unit_of_measures">Unit of measures</string>
 
+    <string name="unit_of_measures">Unit of Measures</string>
     <string name="unit_of_measure_updated">Unit of measure updated</string>
     <string name="error_updating_unit_of_measure">Error updating unit of measure</string>
     <string name="unit_of_measure_deleted">Unit of measure deleted</string>
@@ -66,14 +63,16 @@
     <string name="warehouses">Warehouses</string>
     <string name="capacity">Capacity</string>
     <string name="location">Location</string>
-
     <string name="warehouse_updated">Warehouse updated</string>
     <string name="error_updating_warehouse">Error updating warehouse</string>
     <string name="warehouse_deleted">Warehouse deleted</string>
     <string name="error_deleting_warehouse">Error deleting warehouse</string>
     <string name="warehouse_created">Warehouse created</string>
     <string name="error_creating_warehouse">Error creating warehouse</string>
-
-
-
+    <string name="category_updated">Category updated successfully</string>
+    <string name="error_updating_category">Error updating category</string>
+    <string name="category_deleted">Category deleted successfully</string>
+    <string name="error_deleting_category">Error deleting category</string>
+    <string name="category_created">Category created successfully</string>
+    <string name="error_creating_category">Error creating category</string>
 </resources>
