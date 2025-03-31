@@ -2,11 +2,11 @@ package org.example.erp.features.inventory.domain.entity
 
 import kotlinx.datetime.Instant
 
-data class ProductCategories(
+data class Category(
     val id: String,
     val code: String,
     val name: String,
-    val parentCategoryId: String? = null,
+    val children: List<Category> = emptyList(),
     val createdAt: Instant,
     val updatedAt: Instant? = null,
     val createdBy: String,

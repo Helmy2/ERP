@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 
 @Dao
-interface InventoryDao {
+interface UnitsOfMeasureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: List<UnitsOfMeasureResponse>)
 
