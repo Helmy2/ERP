@@ -5,7 +5,7 @@ import org.example.erp.features.inventory.data.model.AuditLogsResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionDetailsResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionsResponse
 import org.example.erp.features.inventory.data.model.PermissionsResponse
-import org.example.erp.features.inventory.data.model.ProductCategoriesResponse
+import org.example.erp.features.inventory.data.model.CategoryResponse
 import org.example.erp.features.inventory.data.model.ProductsResponse
 import org.example.erp.features.inventory.data.model.RolePermissionsResponse
 import org.example.erp.features.inventory.data.model.StockLevelsResponse
@@ -16,7 +16,7 @@ import org.example.erp.features.inventory.domain.entity.AuditLogs
 import org.example.erp.features.inventory.domain.entity.InventoryTransactionDetails
 import org.example.erp.features.inventory.domain.entity.InventoryTransactions
 import org.example.erp.features.inventory.domain.entity.Permissions
-import org.example.erp.features.inventory.domain.entity.ProductCategories
+import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.inventory.domain.entity.Products
 import org.example.erp.features.inventory.domain.entity.RolePermissions
 import org.example.erp.features.inventory.domain.entity.StockLevels
@@ -38,11 +38,11 @@ fun UnitsOfMeasureResponse.toDomain(): UnitsOfMeasure = UnitsOfMeasure(
     updatedBy = updatedBy
 )
 
-fun ProductCategoriesResponse.toDomain(): ProductCategories = ProductCategories(
-    id = id!!,
+fun CategoryResponse.toDomain(children: List<Category>): Category = Category(
+    id = id,
     code = code,
     name = name,
-    parentCategoryId = parentCategoryId,
+    children = children,
     createdAt = createdAt!!,
     updatedAt = updatedAt,
     createdBy = createdBy!!,
@@ -51,7 +51,7 @@ fun ProductCategoriesResponse.toDomain(): ProductCategories = ProductCategories(
 
 fun ProductsResponse.toDomain(): Products = Products(
     id = id!!,
-    code = code,    name = name,
+    code = code, name = name,
     sku = sku.orEmpty(),
     description = description.orEmpty(),
     categoryId = categoryId.orEmpty(),

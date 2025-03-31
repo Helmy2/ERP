@@ -8,20 +8,24 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import org.example.erp.core.data.core.converter.InstantConverter
-import org.example.erp.features.inventory.data.local.dao.InventoryDao
+import org.example.erp.features.inventory.data.local.dao.CategoryDao
+import org.example.erp.features.inventory.data.local.dao.UnitsOfMeasureDao
 import org.example.erp.features.inventory.data.local.dao.WarehouseDao
+import org.example.erp.features.inventory.data.model.CategoryResponse
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 import org.example.erp.features.inventory.data.model.WarehouseResponse
 
 
 @Database(
-    entities = [UnitsOfMeasureResponse::class, WarehouseResponse::class], version = 3
+    entities = [UnitsOfMeasureResponse::class, WarehouseResponse::class, CategoryResponse::class],
+    version = 4
 )
 @TypeConverters(InstantConverter::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun inventoryDao(): InventoryDao
+    abstract fun inventoryDao(): UnitsOfMeasureDao
     abstract fun warehouseDao(): WarehouseDao
+    abstract fun categoryDao(): CategoryDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
