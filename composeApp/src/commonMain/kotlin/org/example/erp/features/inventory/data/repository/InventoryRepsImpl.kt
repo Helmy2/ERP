@@ -221,8 +221,7 @@ class InventoryRepsImpl(
         }
         launch {
             categoryDao.getAll().map { list ->
-                val categoryResponses = list.filter { it.parentCategoryId == null }
-                categoryResponses.map {
+                list.map {
                     it.toDomain(
                         children = getCategoriesChildren(it, list),
                         parentCategory = getCategoryParent(it, list),
@@ -242,8 +241,8 @@ class InventoryRepsImpl(
         val children = categories.filter { it.parentCategoryId == category.id }
         return children.map {
             it.toDomain(
-                getCategoriesChildren(it, categories),
-                getCategoryParent(it, categories)
+                if (children.isEmpty()) emptyList() else getCategoriesChildren(it, categories),
+                if (category.parentCategoryId == null) null else getCategoryParent(it, categories)
             )
         }
     }
@@ -267,7 +266,7 @@ class InventoryRepsImpl(
                 buildJsonObject {
                     put(CategoryResponse::code.name, code)
                     put(CategoryResponse::name.name, name)
-                    put(CategoryResponse::parentCategoryId.name, parentCategoryId)
+                    put("parent_category_id", parentCategoryId)
                 })
             Unit
         }
@@ -281,7 +280,7 @@ class InventoryRepsImpl(
                 buildJsonObject {
                     put(CategoryResponse::code.name, code)
                     put(CategoryResponse::name.name, name)
-                    put(CategoryResponse::parentCategoryId.name, parentCategoryId)
+                    put("parent_category_id", parentCategoryId)
                 }) {
                 filter {
                     CategoryResponse::id eq id

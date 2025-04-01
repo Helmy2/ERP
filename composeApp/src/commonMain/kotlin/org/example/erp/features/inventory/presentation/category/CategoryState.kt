@@ -8,7 +8,9 @@ data class CategoryState(
     val selectedCategory: Category? = null,
     val code: String = "",
     val name: String = "",
+    val parentCategoryCode: String? = null,
     val parentCategory: Category? = null,
+    val isParentCategoryOpen: Boolean = false,
     val getDisplayNameForUser: suspend (String) -> String
 ) {
     val isNew: Boolean get() = selectedCategory == null

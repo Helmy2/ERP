@@ -15,10 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
+import erp.composeapp.generated.resources.categories
 import erp.composeapp.generated.resources.unit_of_measures
 import erp.composeapp.generated.resources.warehouses
 import org.example.erp.core.presentation.components.ItemGridRes
 import org.example.erp.features.inventory.domain.entity.InventoryDestination
+import org.example.erp.features.inventory.presentation.category.CategoryRoute
 import org.example.erp.features.inventory.presentation.unitOfMeasures.UnitOfMeasuresRoute
 import org.example.erp.features.inventory.presentation.warehouses.WarehouseRoute
 import org.koin.compose.viewmodel.koinViewModel
@@ -53,6 +55,7 @@ fun InventoryScreen(
                         when (it) {
                             InventoryDestination.UnitOfMeasures -> Res.string.unit_of_measures
                             InventoryDestination.Warehouses -> Res.string.warehouses
+                            InventoryDestination.Categories -> Res.string.categories
                         }
                     },
                     isSelected = { it == state.selectedDestination },
@@ -75,6 +78,16 @@ fun InventoryScreen(
 
                     InventoryDestination.Warehouses -> {
                         WarehouseRoute(
+                            onBack = {
+                                scaffoldNavigator.navigateBack()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
+                        )
+                    }
+
+                    InventoryDestination.Categories -> {
+                        CategoryRoute(
                             onBack = {
                                 scaffoldNavigator.navigateBack()
                             },

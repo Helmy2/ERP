@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.example.erp.core.domain.snackbar.SnackbarManager
-import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.inventory.domain.useCase.category.CreateCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.DeleteCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.GetAllCategoryUseCase
@@ -70,12 +69,17 @@ class CategoryViewModel(
             is CategoryEvent.UpdateCategory -> updateCategory()
             is CategoryEvent.UpdateCode -> updateCode(event.code)
             is CategoryEvent.UpdateName -> updateName(event.name)
-            is CategoryEvent.UpdateParentCategory -> updateParentCategory(event.category)
+            is CategoryEvent.UpdateIsParentCategoryOpen -> updateIsParentCategoryOpen(event.open)
+            is CategoryEvent.UpdateParentCategoryCode -> updateParentCategoryCode(event.code)
         }
     }
 
-    private fun updateParentCategory(category: Category) {
-        _state.update { it.copy(parentCategory = category) }
+    private fun updateParentCategoryCode(code: String) {
+        _state.update { it.copy(parentCategoryCode = code) }
+    }
+
+    private fun updateIsParentCategoryOpen(open: Boolean) {
+        _state.update { it.copy(isParentCategoryOpen = open) }
     }
 
     private fun updateName(name: String) {
@@ -88,11 +92,15 @@ class CategoryViewModel(
 
     private fun updateCategory() {
         viewModelScope.launch {
+            val parentCode = state.value.categories.firstOrNull {
+                it.code == state.value.parentCategoryCode
+            }?.id.takeIf { it != state.value.selectedCategory?.id }
             updateCategoryUseCase(
                 id = state.value.selectedCategory!!.id,
                 name = state.value.name,
                 code = state.value.code,
-                parentCategoryId = state.value.parentCategory?.id
+                parentCategoryId = parentCode
+
             ).fold(onSuccess = {
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.category_updated))
@@ -144,7 +152,12 @@ class CategoryViewModel(
         if (category == null) {
             _state.update {
                 it.copy(
-                    name = "", parentCategory = null, selectedCategory = null, loading = false
+                    name = "",
+                    parentCategory = null,
+                    selectedCategory = null,
+                    loading = false,
+                    isParentCategoryOpen = false,
+                    parentCategoryCode = ""
                 )
             }
         } else {
@@ -153,6 +166,7 @@ class CategoryViewModel(
                     name = category.name,
                     parentCategory = category.parentCategory,
                     selectedCategory = category,
+                    parentCategoryCode = category.parentCategory?.code ?: "",
                     loading = false
                 )
             }
@@ -166,7 +180,9 @@ class CategoryViewModel(
                 selectedCategory = null,
                 code = "",
                 name = "",
-                parentCategory = null
+                parentCategory = null,
+                parentCategoryCode = "",
+                isParentCategoryOpen = false
             )
         }
     }

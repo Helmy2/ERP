@@ -69,10 +69,15 @@
     <string name="error_deleting_warehouse">Error deleting warehouse</string>
     <string name="warehouse_created">Warehouse created</string>
     <string name="error_creating_warehouse">Error creating warehouse</string>
+    <string name="categories">Categories</string>
     <string name="category_updated">Category updated successfully</string>
     <string name="error_updating_category">Error updating category</string>
     <string name="category_deleted">Category deleted successfully</string>
     <string name="error_deleting_category">Error deleting category</string>
     <string name="category_created">Category created successfully</string>
     <string name="error_creating_category">Error creating category</string>
+
+    <string name="parent_category">Parent Category</string>
+    <string name="none">None</string>
+    <string name="no_categories_found">You Should create a category first</string>
 </resources>
