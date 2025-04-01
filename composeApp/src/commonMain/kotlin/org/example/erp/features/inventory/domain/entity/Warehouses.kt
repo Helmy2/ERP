@@ -3,13 +3,13 @@ package org.example.erp.features.inventory.domain.entity
 import kotlinx.datetime.Instant
 
 data class Warehouses(
-    val id: String,
-    val code: String,
+    override val id: String,
+    override val code: String,
     val name: String,
     val location: String,
     val capacity: Long,
-    val createdAt: Instant,
-    val updatedAt: Instant? = null,
-    val createdBy: String,
-    val updatedBy: String? = null
-)
+    override val createdAt: Instant,
+    override val updatedAt: Instant? = null,
+    override val createdBy: String,
+    override val updatedBy: String? = null
+) : Item

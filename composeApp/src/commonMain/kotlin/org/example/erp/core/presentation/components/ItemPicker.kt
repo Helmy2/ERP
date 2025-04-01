@@ -70,8 +70,6 @@ fun <T> ItemPicker(
             }
         }
 
-        print("forbiddenItemCodes $forbiddenItemCodes")
-
         val invalidCode = forbiddenItemCodes.contains(itemCode)
 
         val isNewItem = forbiddenItemCodes.contains(itemCode) || availableItems.any {
