@@ -14,12 +14,12 @@ interface WarehouseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: List<WarehouseResponse>)
 
-    @Query("DELETE FROM WarehouseResponse")
-    suspend fun clear()
-
     @Delete
     suspend fun delete(list: List<WarehouseResponse>)
 
     @Query("SELECT * FROM WarehouseResponse")
     fun getAll(): Flow<List<WarehouseResponse>>
+
+    @Query("SELECT * FROM WarehouseResponse WHERE code = :code")
+    suspend fun getByCode(code: String): WarehouseResponse
 }

@@ -125,6 +125,12 @@ class InventoryRepsImpl(
         }
     }
 
+    override suspend fun getWarehouse(code: String): Result<Warehouses> = withContext(dispatcher) {
+        runCatching {
+            warehouseDao.getByCode(code).toDomain()
+        }
+    }
+
     @OptIn(SupabaseExperimental::class)
     override fun getAllWarehouse(): Flow<Result<List<Warehouses>>> = channelFlow {
         launch {

@@ -18,6 +18,7 @@ import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.CreateWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.GetAllWarehouseUseCase
+import org.example.erp.features.inventory.domain.useCase.warehouse.GetWarehouseByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.UpdateWarehouseUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
@@ -25,6 +26,7 @@ import org.jetbrains.compose.resources.getString
 class WarehouseViewModel(
     private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
+    private val getWarehouseByCode: GetWarehouseByCodeUseCase,
     private val getAllWarehouse: GetAllWarehouseUseCase,
     private val createWarehouse: CreateWarehouseUseCase,
     private val updateWarehouse: UpdateWarehouseUseCase,
@@ -56,7 +58,8 @@ class WarehouseViewModel(
                         _state.update {
                             it.copy(
                                 warehousesList = list.sortedBy { warehouse -> warehouse.code },
-                                loading = false )
+                                loading = false
+                            )
                         }
                     },
                     onFailure = {
@@ -82,32 +85,33 @@ class WarehouseViewModel(
     }
 
     private fun searchWarehouse(code: String) {
-        _state.update { it.copy(code = code, loading = true) }
+        viewModelScope.launch {
+            _state.update { it.copy(code = code, loading = true) }
 
-        val warehouses = _state.value.warehousesList.firstOrNull { item ->
-            item.code == code
-        }
-
-        if (warehouses == null) {
-            _state.update {
-                it.copy(
-                    name = "",
-                    capacity = null,
-                    location = "",
-                    selectedWarehouse = null,
-                    loading = false
-                )
-            }
-        } else {
-            _state.update {
-                it.copy(
-                    name = warehouses.name,
-                    capacity = warehouses.capacity,
-                    location = warehouses.location,
-                    selectedWarehouse = warehouses,
-                    loading = false
-                )
-            }
+            getWarehouseByCode(code).fold(
+                onFailure = {
+                    _state.update {
+                        it.copy(
+                            name = "",
+                            capacity = null,
+                            location = "",
+                            selectedWarehouse = null,
+                            loading = false
+                        )
+                    }
+                },
+                onSuccess = { warehouses ->
+                    _state.update {
+                        it.copy(
+                            name = warehouses.name,
+                            capacity = warehouses.capacity,
+                            location = warehouses.location,
+                            selectedWarehouse = warehouses,
+                            loading = false
+                        )
+                    }
+                }
+            )
         }
     }
 

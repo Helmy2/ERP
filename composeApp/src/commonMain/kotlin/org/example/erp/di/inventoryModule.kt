@@ -17,6 +17,7 @@ import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.UpdateUn
 import org.example.erp.features.inventory.domain.useCase.warehouse.CreateWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.DeleteWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.GetAllWarehouseUseCase
+import org.example.erp.features.inventory.domain.useCase.warehouse.GetWarehouseByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.UpdateWarehouseUseCase
 import org.example.erp.features.inventory.presentation.category.CategoryViewModel
 import org.example.erp.features.inventory.presentation.inventory.InventoryViewModel
@@ -36,6 +37,7 @@ val inventoryModule = module {
     factory {
         get<AppDatabase>().inventoryDao()
     }
+
     factory {
         get<AppDatabase>().warehouseDao()
     }
@@ -50,12 +52,13 @@ val inventoryModule = module {
     factory { UpdateUnitOfMeasureUseCase(get()) }
     factory { DeleteUnitOfMeasureUseCase(get()) }
 
-    factory { GetCategoryByCodeUseCase(get()) }
+    factory { GetWarehouseByCodeUseCase(get()) }
     factory { CreateWarehouseUseCase(get()) }
     factory { GetAllWarehouseUseCase(get()) }
     factory { UpdateWarehouseUseCase(get()) }
     factory { DeleteWarehouseUseCase(get()) }
 
+    factory { GetCategoryByCodeUseCase(get()) }
     factory { CreateCategoryUseCase(get()) }
     factory { GetAllCategoryUseCase(get()) }
     factory { UpdateCategoryUseCase(get()) }
@@ -63,6 +66,6 @@ val inventoryModule = module {
 
     viewModel { InventoryViewModel() }
     viewModel { UnitOfMeasuresViewModel(get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { CategoryViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
