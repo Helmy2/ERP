@@ -13,12 +13,19 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: List<CategoryResponse>)
 
-    @Query("DELETE FROM CategoryResponse")
-    suspend fun clear()
-
     @Delete
     suspend fun delete(list: List<CategoryResponse>)
 
     @Query("SELECT * FROM CategoryResponse")
     fun getAll(): Flow<List<CategoryResponse>>
+
+    @Query("SELECT * FROM CategoryResponse WHERE code = :code")
+    suspend fun getByCode(code: String): CategoryResponse
+
+    @Query("SELECT * FROM CategoryResponse WHERE id = :id")
+    suspend fun getById(id: String): CategoryResponse
+
+    @Query("SELECT * FROM CategoryResponse WHERE parentCategoryId = :id")
+    suspend fun getChildren(id: String): List<CategoryResponse>
+
 }

@@ -43,4 +43,5 @@ interface InventoryReps {
 
     suspend fun deleteCategory(code: String): Result<Unit>
     suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure>
+    suspend fun getCategory(code: String): Result<Category>
 }

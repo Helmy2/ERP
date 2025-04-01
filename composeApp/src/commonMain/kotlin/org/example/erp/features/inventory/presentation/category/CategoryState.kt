@@ -15,16 +15,21 @@ data class CategoryState(
     val getDisplayNameForUser: suspend (String) -> String
 ) {
     val isNew: Boolean get() = selectedCategory == null
-    val forbiddenItemCodes = forbiddenChildrenCodes(categories) + code
+    val forbiddenItemCodes = getAllDescendantCodesIncludingSelfRecursive(selectedCategory, categories) + code
 }
 
-fun forbiddenChildrenCodes(categories: List<Category>): List<String> {
-    val forbiddenCodes = mutableListOf<String>()
-    categories.forEach { category ->
-        if (category.children.isNotEmpty()) {
-            forbiddenCodes.addAll(forbiddenChildrenCodes(category.children))
+fun getAllDescendantCodesIncludingSelfRecursive(
+    selectedCategory: Category?,
+    categories: List<Category>
+): List<String> {
+    val codes = mutableSetOf<String>()
+    if (selectedCategory != null) {
+        codes.add(selectedCategory.code)
+        val children = categories.filter { it.parentCategory?.id == selectedCategory.id }
+        codes.addAll(children.map { it.code })
+        children.forEach { child ->
+            codes.addAll(getAllDescendantCodesIncludingSelfRecursive(child, categories))
         }
-        forbiddenCodes.add(category.code)
     }
-    return forbiddenCodes
+    return codes.toList()
 }

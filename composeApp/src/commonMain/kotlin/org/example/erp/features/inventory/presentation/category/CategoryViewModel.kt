@@ -19,6 +19,7 @@ import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.features.inventory.domain.useCase.category.CreateCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.DeleteCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.GetAllCategoryUseCase
+import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.category.UpdateCategoryUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
@@ -26,6 +27,7 @@ import org.jetbrains.compose.resources.getString
 class CategoryViewModel(
     private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
+    private val getCategoryByCode: GetCategoryByCodeUseCase,
     private val getAllCategoryUseCase: GetAllCategoryUseCase,
     private val createCategoryUseCase: CreateCategoryUseCase,
     private val updateCategoryUseCase: UpdateCategoryUseCase,
@@ -142,33 +144,31 @@ class CategoryViewModel(
     }
 
     private fun searchCategory(code: String) {
-        _state.update { it.copy(code = code, loading = true) }
+        viewModelScope.launch {
+            _state.update { it.copy(code = code, loading = true) }
 
-        val category = _state.value.categories.firstOrNull { item ->
-            item.code == code
-        }
-
-        if (category == null) {
-            _state.update {
-                it.copy(
-                    name = "",
-                    parentCategory = null,
-                    selectedCategory = null,
-                    loading = false,
-                    isParentCategoryOpen = false,
-                    parentCategoryCode = ""
-                )
-            }
-        } else {
-            _state.update {
-                it.copy(
-                    name = category.name,
-                    parentCategory = category.parentCategory,
-                    selectedCategory = category,
-                    parentCategoryCode = category.parentCategory?.code ?: "",
-                    loading = false
-                )
-            }
+            getCategoryByCode(code).fold(onFailure = {
+                _state.update {
+                    it.copy(
+                        name = "",
+                        parentCategory = null,
+                        selectedCategory = null,
+                        loading = false,
+                        isParentCategoryOpen = false,
+                        parentCategoryCode = ""
+                    )
+                }
+            }, onSuccess = { category ->
+                _state.update {
+                    it.copy(
+                        name = category.name,
+                        parentCategory = category.parentCategory,
+                        selectedCategory = category,
+                        parentCategoryCode = category.parentCategory?.code ?: "",
+                        loading = false
+                    )
+                }
+            })
         }
     }
 

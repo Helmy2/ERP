@@ -70,7 +70,7 @@ fun CategoryScreen(
             ItemGrid(
                 list = state.categories,
                 onItemClick = { onEvent(CategoryEvent.SearchCategory(it.code)) },
-                labelProvider = { "${it.code} - ${it.name}" },
+                labelProvider = { "${it.code}: ${it.name}" },
                 isSelected = { it.code == state.code },
                 modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())
             )

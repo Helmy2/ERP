@@ -203,6 +203,15 @@ class InventoryRepsImpl(
         }
     }
 
+    override suspend fun getCategory(code: String): Result<Category> = runCatching {
+        val response = categoryDao.getByCode(code)
+        response.toDomain(
+            children = categoryDao.getChildren(response.id).map { it.toDomain(emptyList(), null) },
+            parentCategory = if (response.parentCategoryId == null) null
+            else categoryDao.getById(response.parentCategoryId).toDomain(emptyList(), null),
+        )
+    }
+
     @OptIn(SupabaseExperimental::class)
     override fun getCategories(): Flow<Result<List<Category>>> = channelFlow {
         launch {
@@ -249,7 +258,9 @@ class InventoryRepsImpl(
         return children.map {
             it.toDomain(
                 if (children.isEmpty()) emptyList() else getCategoriesChildren(it, categories),
-                if (category.parentCategoryId == null) null else getCategoryParent(it, categories)
+                if (category.parentCategoryId == null) null else getCategoryParent(
+                    it, categories
+                )
             )
         }
     }
@@ -259,8 +270,7 @@ class InventoryRepsImpl(
     ): Category? {
         val parent = categories.firstOrNull { it.id == category.parentCategoryId }
         return parent?.toDomain(
-            getCategoriesChildren(parent, categories),
-            getCategoryParent(parent, categories)
+            getCategoriesChildren(parent, categories), getCategoryParent(parent, categories)
         )
     }
 
