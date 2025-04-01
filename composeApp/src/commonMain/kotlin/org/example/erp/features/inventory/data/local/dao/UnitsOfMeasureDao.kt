@@ -13,12 +13,12 @@ interface UnitsOfMeasureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(entity: List<UnitsOfMeasureResponse>)
 
-    @Query("DELETE FROM UnitsOfMeasureResponse")
-    suspend fun clear()
-
     @Delete
     suspend fun delete(list: List<UnitsOfMeasureResponse>)
 
     @Query("SELECT * FROM UnitsOfMeasureResponse")
     fun getAll(): Flow<List<UnitsOfMeasureResponse>>
+
+    @Query("SELECT * FROM UnitsOfMeasureResponse WHERE code = :code")
+    suspend fun getByCode(code: String): UnitsOfMeasureResponse
 }

@@ -41,6 +41,13 @@ class InventoryRepsImpl(
     private val dispatcher: CoroutineDispatcher
 ) : InventoryReps {
 
+    override suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure> =
+        withContext(dispatcher) {
+            runCatching {
+                unitsOfMeasureDao.getByCode(code).toDomain()
+            }
+        }
+
     @OptIn(SupabaseExperimental::class)
     override fun getAllUnitsOfMeasure(): Flow<Result<List<UnitsOfMeasure>>> = channelFlow {
         launch {

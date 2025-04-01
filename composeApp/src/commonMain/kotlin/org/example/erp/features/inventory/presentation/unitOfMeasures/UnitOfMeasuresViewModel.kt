@@ -19,6 +19,7 @@ import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.CreateUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetAllUnitsOfMeasureUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetUnitOfMeasuresByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.UpdateUnitOfMeasureUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
@@ -26,6 +27,7 @@ import org.jetbrains.compose.resources.getString
 class UnitOfMeasuresViewModel(
     private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
+    private val getUnitOfMeasureByCode: GetUnitOfMeasuresByCodeUseCase,
     private val getAllUnitsOfMeasure: GetAllUnitsOfMeasureUseCase,
     private val createUnitOfMeasure: CreateUnitOfMeasureUseCase,
     private val deleteUnitOfMeasure: DeleteUnitOfMeasureUseCase,
@@ -91,27 +93,31 @@ class UnitOfMeasuresViewModel(
     }
 
     private fun findUnitOfMeasureByCode(code: String) {
-        _state.update { it.copy(code = code, loading = true) }
+        viewModelScope.launch {
+            _state.update { it.copy(code = code, loading = true) }
 
-        val unitsOfMeasure = _state.value.unitsOfMeasureList.firstOrNull { item ->
-            item.code == code
-        }
-
-        if (unitsOfMeasure == null) {
-            _state.update {
-                it.copy(
-                    name = "", description = "", selectedUnitOfMeasure = null, loading = false
-                )
-            }
-        } else {
-            _state.update {
-                it.copy(
-                    name = unitsOfMeasure.name,
-                    description = unitsOfMeasure.description ?: "",
-                    selectedUnitOfMeasure = unitsOfMeasure,
-                    loading = false
-                )
-            }
+            getUnitOfMeasureByCode(code).fold(
+                onFailure = {
+                    _state.update {
+                        it.copy(
+                            name = "",
+                            description = "",
+                            selectedUnitOfMeasure = null,
+                            loading = false
+                        )
+                    }
+                },
+                onSuccess = { unitOfMeasure ->
+                    _state.update {
+                        it.copy(
+                            name = unitOfMeasure.name,
+                            description = unitOfMeasure.description ?: "",
+                            selectedUnitOfMeasure = unitOfMeasure,
+                            loading = false
+                        )
+                    }
+                }
+            )
         }
     }
 

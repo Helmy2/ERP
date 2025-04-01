@@ -99,7 +99,6 @@ fun UnitOfMeasuresScreen(
                 value = state.description,
                 onValueChange = { onEvent(UnitOfMeasuresEvent.UpdateDescription(it)) },
                 label = stringResource(Res.string.description),
-                numberOfLines = 5,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             )
 
