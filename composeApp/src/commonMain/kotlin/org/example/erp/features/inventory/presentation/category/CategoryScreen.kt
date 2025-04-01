@@ -1,6 +1,5 @@
 package org.example.erp.features.inventory.presentation.category
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.code
@@ -33,16 +30,14 @@ import erp.composeapp.generated.resources.create
 import erp.composeapp.generated.resources.created_by
 import erp.composeapp.generated.resources.delete
 import erp.composeapp.generated.resources.name
-import erp.composeapp.generated.resources.no_categories_found
-import erp.composeapp.generated.resources.none
 import erp.composeapp.generated.resources.parent_category
 import erp.composeapp.generated.resources.update
 import erp.composeapp.generated.resources.updated_by
 import org.example.erp.core.presentation.components.BackButton
 import org.example.erp.core.presentation.components.ItemGrid
+import org.example.erp.core.presentation.components.ItemPicker
 import org.example.erp.core.presentation.components.LabeledTextField
 import org.example.erp.core.util.toLocalString
-import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.inventory.presentation.components.VersionDetails
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -100,13 +95,25 @@ fun CategoryScreen(
             }
 
             FlowRow {
-                D(
-                    code = state.parentCategoryCode,
-                    categoryList = state.categories.filterNot { it.id == state.selectedCategory?.id },
-                    expended = state.isParentCategoryOpen,
-                    onDismissRequest = { onEvent(CategoryEvent.UpdateIsParentCategoryOpen(it)) },
-                    onItemClick = { onEvent(CategoryEvent.UpdateParentCategoryCode(it)) },
-                    modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())
+                ItemPicker(
+                    label = stringResource(Res.string.parent_category),
+                    itemCode = state.parentCategoryCode,
+                    forbiddenItemCodes =state.forbiddenItemCodes,
+                    onItemCodeChanged = { onEvent(CategoryEvent.UpdateParentCategoryCode(it)) },
+                    availableItems = state.categories.filterNot { it.id == state.selectedCategory?.id },
+                    isDialogVisible = state.isParentCategoryOpen,
+                    onDialogVisibilityChanged = {
+                        onEvent(
+                            CategoryEvent.UpdateIsParentCategoryOpen(
+                                it
+                            )
+                        )
+                    },
+                    onItemClicked = { onEvent(CategoryEvent.UpdateParentCategoryCode(it?.code)) },
+                    itemLabel = { "${it.code}: ${it.name}" },
+                    matchesItemCode = { code, category -> category.code == code },
+                    onAddNewItem = { onEvent(CategoryEvent.SearchCategory(it)) },
+                    modifier = Modifier
                 )
             }
 
@@ -158,57 +165,5 @@ fun CategoryScreen(
         BackButton(
             onClick = onBack, modifier = Modifier.padding(16.dp).align(Alignment.TopStart)
         )
-    }
-}
-
-@Composable
-fun D(
-    code: String?,
-    expended: Boolean,
-    categoryList: List<Category>,
-    onDismissRequest: (Boolean) -> Unit,
-    onItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        LabeledTextField(
-            value = code ?: "",
-            onValueChange = onItemClick,
-            label = stringResource(Res.string.parent_category),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-        )
-        Card(
-            onClick = {
-                onDismissRequest(true)
-            },
-            content = {
-                Text(
-                    text = if (code.isNullOrEmpty()) stringResource(Res.string.none) else categoryList.firstOrNull { it.code == code }?.name
-                        ?: stringResource(Res.string.no_categories_found),
-                    modifier = Modifier.padding(8.dp)
-                )
-            },
-            modifier = Modifier.padding(8.dp),
-        )
-    }
-
-
-    AnimatedVisibility(expended) {
-        Dialog(
-            onDismissRequest = { onDismissRequest(false) },
-        ) {
-            ItemGrid(
-                list = categoryList,
-                onItemClick = {
-                    onDismissRequest(false)
-                    onItemClick(it.code)
-                },
-                labelProvider = { "${it.code} - ${it.name}" },
-                isSelected = { it.code == code },
-                modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())
-            )
-        }
     }
 }

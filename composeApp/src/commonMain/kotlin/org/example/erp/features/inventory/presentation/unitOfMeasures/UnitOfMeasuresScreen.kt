@@ -70,7 +70,7 @@ fun UnitOfMeasuresScreen(
             ItemGrid(
                 list = state.unitsOfMeasureList,
                 onItemClick = { onEvent(UnitOfMeasuresEvent.SearchUnitOfMeasure(it.code)) },
-                labelProvider ={ "${it.code} - ${it.name}" },
+                labelProvider ={ "${it.code}: ${it.name}" },
                 isSelected = { it.code == state.code },
                 modifier = Modifier.heightIn(max = 300.dp)
             )

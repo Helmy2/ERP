@@ -72,7 +72,7 @@ fun WarehouseScreen(
             ItemGrid(
                 list = state.warehousesList,
                 onItemClick = { onEvent(WarehouseEvent.SearchWarehouse(it.code)) },
-                labelProvider = { "${it.code} - ${it.name}" },
+                labelProvider = { "${it.code}: ${it.name}" },
                 isSelected = { it.code == state.code },
                 modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())
             )

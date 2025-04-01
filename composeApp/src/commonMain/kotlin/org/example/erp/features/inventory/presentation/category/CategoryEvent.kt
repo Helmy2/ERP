@@ -8,7 +8,7 @@ sealed interface CategoryEvent {
     data class SearchCategory(val code: String) : CategoryEvent
     data class UpdateCode(val code: String) : CategoryEvent
     data class UpdateName(val name: String) : CategoryEvent
-    data class UpdateParentCategoryCode(val code: String) : CategoryEvent
+    data class UpdateParentCategoryCode(val code: String?) : CategoryEvent
     data class UpdateIsParentCategoryOpen(val open: Boolean) : CategoryEvent
 
 }

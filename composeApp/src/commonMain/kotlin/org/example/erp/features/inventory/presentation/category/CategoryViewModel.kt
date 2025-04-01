@@ -74,7 +74,7 @@ class CategoryViewModel(
         }
     }
 
-    private fun updateParentCategoryCode(code: String) {
+    private fun updateParentCategoryCode(code: String?) {
         _state.update { it.copy(parentCategoryCode = code) }
     }
 
@@ -100,7 +100,6 @@ class CategoryViewModel(
                 name = state.value.name,
                 code = state.value.code,
                 parentCategoryId = parentCode
-
             ).fold(onSuccess = {
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.category_updated))

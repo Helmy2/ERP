@@ -78,6 +78,8 @@
     <string name="error_creating_category">Error creating category</string>
 
     <string name="parent_category">Parent Category</string>
-    <string name="none">None</string>
+    <string name="search">Search</string>
     <string name="no_categories_found">You Should create a category first</string>
+    <string name="parent_category_error">Parent and Child can't be the same category</string>
+    <string name="add_item">Add item</string>
 </resources>

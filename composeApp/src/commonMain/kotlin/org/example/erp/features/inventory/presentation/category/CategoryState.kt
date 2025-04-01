@@ -9,9 +9,22 @@ data class CategoryState(
     val code: String = "",
     val name: String = "",
     val parentCategoryCode: String? = null,
+
     val parentCategory: Category? = null,
     val isParentCategoryOpen: Boolean = false,
     val getDisplayNameForUser: suspend (String) -> String
 ) {
     val isNew: Boolean get() = selectedCategory == null
+    val forbiddenItemCodes = forbiddenChildrenCodes(categories) + code
+}
+
+fun forbiddenChildrenCodes(categories: List<Category>): List<String> {
+    val forbiddenCodes = mutableListOf<String>()
+    categories.forEach { category ->
+        if (category.children.isNotEmpty()) {
+            forbiddenCodes.addAll(forbiddenChildrenCodes(category.children))
+        }
+        forbiddenCodes.add(category.code)
+    }
+    return forbiddenCodes
 }
