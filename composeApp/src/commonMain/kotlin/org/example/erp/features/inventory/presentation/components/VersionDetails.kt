@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.at
+import org.example.erp.features.user.domain.entity.User
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -22,16 +23,16 @@ fun VersionDetails(
     sectionHeader: String,
     modifierName: String?,
     modificationTimestamp: String?,
-    getDisplayNameForUser: suspend (String) -> String,
+    fetchUser: suspend (String) -> Result<User>,
     modifier: Modifier = Modifier,
 ) {
     var displayName by remember {
         mutableStateOf("")
     }
 
-    LaunchedEffect(modifierName){
+    LaunchedEffect(modifierName) {
         if (modifierName != null) {
-            displayName = getDisplayNameForUser(modifierName)
+            displayName = fetchUser(modifierName).getOrNull()?.name ?: ""
         }
     }
 

@@ -120,13 +120,13 @@ fun CategoryScreen(
             VersionDetails(
                 sectionHeader = stringResource(Res.string.created_by),
                 modifierName = state.selectedCategory?.createdBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedCategory?.createdAt?.toLocalString(),
             )
             VersionDetails(
                 sectionHeader = stringResource(Res.string.updated_by),
                 modifierName = state.selectedCategory?.updatedBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedCategory?.updatedAt?.toLocalString(),
             )
             Row(

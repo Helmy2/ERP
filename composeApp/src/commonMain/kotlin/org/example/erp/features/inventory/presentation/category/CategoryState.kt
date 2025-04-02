@@ -1,6 +1,7 @@
 package org.example.erp.features.inventory.presentation.category
 
 import org.example.erp.features.inventory.domain.entity.Category
+import org.example.erp.features.user.domain.entity.User
 
 data class CategoryState(
     val loading: Boolean = true,
@@ -12,7 +13,7 @@ data class CategoryState(
 
     val parentCategory: Category? = null,
     val isParentCategoryOpen: Boolean = false,
-    val getDisplayNameForUser: suspend (String) -> String
+    val getUserById: suspend (String) -> Result<User>
 ) {
     val isNew: Boolean get() = selectedCategory == null
     val forbiddenItemCodes = getAllDescendantCodesIncludingSelfRecursive(selectedCategory, categories) + code

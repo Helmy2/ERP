@@ -120,13 +120,13 @@ fun WarehouseScreen(
             VersionDetails(
                 sectionHeader = stringResource(Res.string.created_by),
                 modifierName = state.selectedWarehouse?.createdBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedWarehouse?.createdAt?.toLocalString(),
             )
             VersionDetails(
                 sectionHeader = stringResource(Res.string.updated_by),
                 modifierName = state.selectedWarehouse?.updatedBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedWarehouse?.updatedAt?.toLocalString(),
             )
             Row(

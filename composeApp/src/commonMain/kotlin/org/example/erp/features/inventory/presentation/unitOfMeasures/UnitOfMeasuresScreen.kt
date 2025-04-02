@@ -105,13 +105,13 @@ fun UnitOfMeasuresScreen(
             VersionDetails(
                 sectionHeader = stringResource(Res.string.created_by),
                 modifierName = state.selectedUnitOfMeasure?.createdBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedUnitOfMeasure?.createdAt?.toLocalString(),
             )
             VersionDetails(
                 sectionHeader = stringResource(Res.string.updated_by),
                 modifierName = state.selectedUnitOfMeasure?.updatedBy,
-                getDisplayNameForUser = state.getDisplayNameForUser,
+                fetchUser = state.getUserById,
                 modificationTimestamp = state.selectedUnitOfMeasure?.updatedAt?.toLocalString(),
             )
             Row(

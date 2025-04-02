@@ -35,14 +35,14 @@ class CategoryViewModel(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        CategoryState(getDisplayNameForUser = { getDisplayName(it) })
+        CategoryState(getUserById = { getDisplayName(it) })
     )
     val state = _state.onStart {
         leadInit()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = CategoryState(getDisplayNameForUser = { getDisplayName(it) })
+        initialValue = CategoryState(getUserById = { getDisplayName(it) })
     )
 
     private fun leadInit() {

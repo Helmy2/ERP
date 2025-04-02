@@ -36,7 +36,7 @@ class UnitOfMeasuresViewModel(
 
     private val _state = MutableStateFlow(
         UnitOfMeasuresState(
-            getDisplayNameForUser = { getDisplayName(it) })
+            getUserById = { getDisplayName(it) })
     )
     val state = _state.onStart {
         leadInit()
@@ -44,7 +44,7 @@ class UnitOfMeasuresViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = UnitOfMeasuresState(
-            getDisplayNameForUser = { getDisplayName(it) })
+            getUserById = { getDisplayName(it) })
     )
 
     private fun leadInit() {

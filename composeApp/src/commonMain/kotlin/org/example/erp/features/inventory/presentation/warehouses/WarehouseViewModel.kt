@@ -35,7 +35,7 @@ class WarehouseViewModel(
 
     private val _state = MutableStateFlow(
         WarehouseState(
-            getDisplayNameForUser = { getDisplayName(it) })
+            getUserById = { getDisplayName(it) })
     )
 
     val state = _state
@@ -46,7 +46,7 @@ class WarehouseViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = WarehouseState(
-                getDisplayNameForUser = { getDisplayName(it) }
+                getUserById = { getDisplayName(it) }
             )
         )
 

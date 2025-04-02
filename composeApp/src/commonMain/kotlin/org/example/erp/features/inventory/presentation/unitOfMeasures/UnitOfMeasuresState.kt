@@ -1,6 +1,7 @@
 package org.example.erp.features.inventory.presentation.unitOfMeasures
 
 import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
+import org.example.erp.features.user.domain.entity.User
 
 data class UnitOfMeasuresState(
     val loading: Boolean = true,
@@ -9,7 +10,7 @@ data class UnitOfMeasuresState(
     val code: String = "",
     val name: String = "",
     val description: String = "",
-    val getDisplayNameForUser: suspend (String) -> String
+    val getUserById: suspend (String) -> Result<User>
 ) {
     val isNew: Boolean get() = selectedUnitOfMeasure == null
 }
