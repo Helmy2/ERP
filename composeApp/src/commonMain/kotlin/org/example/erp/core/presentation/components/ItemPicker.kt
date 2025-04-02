@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,7 +51,6 @@ fun <T> ItemPicker(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
                 value = itemCode ?: "",
@@ -60,14 +58,16 @@ fun <T> ItemPicker(
                 minLines = 1,
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                trailingIcon = {
+                    IconButton(
+                        onClick = { onDialogVisibilityChanged(true) },
+                    ) {
+                        Icon(
+                            Icons.Default.Search, contentDescription = stringResource(Res.string.search)
+                        )
+                    }
+                }
             )
-            IconButton(
-                onClick = { onDialogVisibilityChanged(true) },
-            ) {
-                Icon(
-                    Icons.Default.Search, contentDescription = stringResource(Res.string.search)
-                )
-            }
         }
 
         val invalidCode = forbiddenItemCodes.contains(itemCode)

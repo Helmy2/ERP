@@ -71,7 +71,6 @@ fun UnitOfMeasuresScreen(
         mainContent = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
             ) {
                 FlowRow {
                     LabeledTextField(

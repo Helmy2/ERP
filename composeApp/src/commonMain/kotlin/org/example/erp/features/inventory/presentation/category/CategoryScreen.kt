@@ -1,44 +1,27 @@
 package org.example.erp.features.inventory.presentation.category
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.code
-import erp.composeapp.generated.resources.create
-import erp.composeapp.generated.resources.created_by
-import erp.composeapp.generated.resources.delete
 import erp.composeapp.generated.resources.name
 import erp.composeapp.generated.resources.parent_category
-import erp.composeapp.generated.resources.update
-import erp.composeapp.generated.resources.updated_by
-import org.example.erp.core.presentation.components.BackButton
 import org.example.erp.core.presentation.components.ItemGrid
 import org.example.erp.core.presentation.components.ItemPicker
 import org.example.erp.core.presentation.components.LabeledTextField
-import org.example.erp.core.util.toLocalString
-import org.example.erp.features.inventory.presentation.components.VersionDetails
+import org.example.erp.core.presentation.components.SearchScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,45 +43,59 @@ fun CategoryScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier, contentAlignment = Alignment.Center
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.verticalScroll(rememberScrollState()).padding(16.dp)
-        ) {
+    SearchScreen(
+        modifier = modifier,
+        query = state.query,
+        isSearchActive = state.isQueryActive,
+        loading = state.loading,
+        isNew = state.isNew,
+        selectedItem = state.selectedCategory,
+        onQueryChange = { onEvent(CategoryEvent.UpdateQuery(it)) },
+        onSearch = { onEvent(CategoryEvent.Search(it)) },
+        onSearchActiveChange = { onEvent(CategoryEvent.UpdateIsQueryActive(it)) },
+        fetchUser = state.getUserById,
+        onBack = onBack,
+        onDelete = { onEvent(CategoryEvent.DeleteCategory) },
+        onCreate = { onEvent(CategoryEvent.CreateCategory) },
+        onUpdate = { onEvent(CategoryEvent.UpdateCategory) },
+        searchResults = {
             ItemGrid(
                 list = state.categories,
-                onItemClick = { onEvent(CategoryEvent.SearchCategory(it.code)) },
+                onItemClick = {
+                    onEvent(CategoryEvent.UpdateIsQueryActive(false))
+                    onEvent(CategoryEvent.SearchCategory(it.code))
+                },
                 labelProvider = { "${it.code}: ${it.name}" },
                 isSelected = { it.code == state.code },
-                modifier = Modifier.heightIn(max = 300.dp).verticalScroll(rememberScrollState())
             )
+        },
+        mainContent = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FlowRow {
+                    LabeledTextField(
+                        value = state.code,
+                        onValueChange = { onEvent(CategoryEvent.UpdateCode(it)) },
+                        label = stringResource(Res.string.code),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions {
+                            onEvent(CategoryEvent.SearchCategory(state.code))
+                            defaultKeyboardAction(ImeAction.Next)
+                        })
+                    Spacer(modifier = Modifier.size(8.dp))
+                    LabeledTextField(
+                        value = state.name,
+                        onValueChange = { onEvent(CategoryEvent.UpdateName(it)) },
+                        label = stringResource(Res.string.name),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                    )
+                }
 
-            FlowRow {
-                LabeledTextField(
-                    value = state.code,
-                    onValueChange = { onEvent(CategoryEvent.UpdateCode(it)) },
-                    label = stringResource(Res.string.code),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                    keyboardActions = KeyboardActions {
-                        onEvent(CategoryEvent.SearchCategory(state.code))
-                        defaultKeyboardAction(ImeAction.Next)
-                    })
-                Spacer(modifier = Modifier.size(8.dp))
-                LabeledTextField(
-                    value = state.name,
-                    onValueChange = { onEvent(CategoryEvent.UpdateName(it)) },
-                    label = stringResource(Res.string.name),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-                )
-            }
-
-            FlowRow {
                 ItemPicker(
                     label = stringResource(Res.string.parent_category),
                     itemCode = state.parentCategoryCode,
-                    forbiddenItemCodes =state.forbiddenItemCodes,
+                    forbiddenItemCodes = state.forbiddenItemCodes,
                     onItemCodeChanged = { onEvent(CategoryEvent.UpdateParentCategoryCode(it)) },
                     availableItems = state.categories.filterNot { it.id == state.selectedCategory?.id },
                     isDialogVisible = state.isParentCategoryOpen,
@@ -116,54 +113,6 @@ fun CategoryScreen(
                     modifier = Modifier
                 )
             }
-
-            VersionDetails(
-                sectionHeader = stringResource(Res.string.created_by),
-                modifierName = state.selectedCategory?.createdBy,
-                fetchUser = state.getUserById,
-                modificationTimestamp = state.selectedCategory?.createdAt?.toLocalString(),
-            )
-            VersionDetails(
-                sectionHeader = stringResource(Res.string.updated_by),
-                modifierName = state.selectedCategory?.updatedBy,
-                fetchUser = state.getUserById,
-                modificationTimestamp = state.selectedCategory?.updatedAt?.toLocalString(),
-            )
-            Row(
-                modifier = Modifier.padding(8.dp).align(Alignment.End),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-
-            ) {
-                ElevatedButton(
-                    onClick = {
-                        onEvent(CategoryEvent.DeleteCategory)
-                    },
-                    enabled = !state.isNew && !state.loading,
-                ) {
-                    Text(stringResource(Res.string.delete))
-                }
-                Button(
-                    onClick = {
-                        if (state.isNew) {
-                            onEvent(CategoryEvent.CreateCategory)
-                        } else {
-                            onEvent(CategoryEvent.UpdateCategory)
-                        }
-                    },
-                    enabled = !state.loading,
-                ) {
-                    Text(
-                        stringResource(
-                            if (state.isNew) Res.string.create
-                            else Res.string.update
-                        )
-                    )
-                }
-            }
-        }
-        BackButton(
-            onClick = onBack, modifier = Modifier.padding(16.dp).align(Alignment.TopStart)
-        )
-    }
+        },
+    )
 }

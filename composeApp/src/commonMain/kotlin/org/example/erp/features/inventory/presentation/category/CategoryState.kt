@@ -4,15 +4,16 @@ import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.user.domain.entity.User
 
 data class CategoryState(
-    val loading: Boolean = true,
+    val loading: Boolean = false,
     val categories: List<Category> = emptyList(),
     val selectedCategory: Category? = null,
     val code: String = "",
     val name: String = "",
     val parentCategoryCode: String? = null,
-
     val parentCategory: Category? = null,
     val isParentCategoryOpen: Boolean = false,
+    val query: String = "",
+    val isQueryActive: Boolean = false,
     val getUserById: suspend (String) -> Result<User>
 ) {
     val isNew: Boolean get() = selectedCategory == null

@@ -6,13 +6,8 @@ import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -208,16 +203,20 @@ class InventoryRepsImpl(
         )
     }
 
+    override suspend fun getCategories(query: String): Result<List<Category>> = runCatching {
+        categoryDao.getAll(query).map { it.toDomain(emptyList(), null) }
+    }
+
     @OptIn(SupabaseExperimental::class)
-    override fun getCategories(): Flow<Result<List<Category>>> = channelFlow {
-        launch {
+    override fun syncCategories(): Result<Unit> = runCatching {
+        CoroutineScope(dispatcher).launch {
             supabaseClient.from(
                 CATEGORY
             ).selectAsFlow(
                 CategoryResponse::id
             ).onEach {
                 performDataComparison(
-                    localData = categoryDao.getAll().first(),
+                    localData = categoryDao.getAll(""),
                     remoteData = it,
                     keySelector = { response -> response.id },
                     areItemsDifferent = { local, remote ->
@@ -228,48 +227,10 @@ class InventoryRepsImpl(
                     categoryDao.insert(toInsert)
                 }
             }.catch {
-                trySend(Result.failure(it))
+                println("Exception in syncCategories: $it")
             }.launchIn(this)
         }
-        launch {
-            categoryDao.getAll().map { list ->
-                list.map {
-                    it.toDomain(
-                        children = getCategoriesChildren(it, list),
-                        parentCategory = getCategoryParent(it, list),
-                    )
-                }
-            }.catch {
-                trySend(Result.failure(it))
-            }.collectLatest {
-                trySend(Result.success(it))
-            }
-        }
     }
-
-    private fun getCategoriesChildren(
-        category: CategoryResponse, categories: List<CategoryResponse>
-    ): List<Category> {
-        val children = categories.filter { it.parentCategoryId == category.id }
-        return children.map {
-            it.toDomain(
-                if (children.isEmpty()) emptyList() else getCategoriesChildren(it, categories),
-                if (category.parentCategoryId == null) null else getCategoryParent(
-                    it, categories
-                )
-            )
-        }
-    }
-
-    private fun getCategoryParent(
-        category: CategoryResponse, categories: List<CategoryResponse>
-    ): Category? {
-        val parent = categories.firstOrNull { it.id == category.parentCategoryId }
-        return parent?.toDomain(
-            getCategoriesChildren(parent, categories), getCategoryParent(parent, categories)
-        )
-    }
-
 
     override suspend fun createCategory(
         code: String, name: String, parentCategoryId: String?

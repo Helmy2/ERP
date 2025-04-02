@@ -77,6 +77,8 @@
     <string name="category_created">Category created successfully</string>
     <string name="error_creating_category">Error creating category</string>
     <string name="error_syncing_units_of_measure">Error syncing units of measure</string>
+    <string name="error_syncing_warehouse">Error syncing warehouse</string>
+    <string name="error_syncing_categories">Error syncing categories</string>
 
     <string name="parent_category">Parent Category</string>
     <string name="search">Search</string>

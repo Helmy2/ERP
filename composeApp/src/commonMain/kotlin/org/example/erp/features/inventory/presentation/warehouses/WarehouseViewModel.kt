@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.error_creating_warehouse
 import erp.composeapp.generated.resources.error_deleting_warehouse
+import erp.composeapp.generated.resources.error_syncing_warehouse
 import erp.composeapp.generated.resources.error_updating_warehouse
 import erp.composeapp.generated.resources.warehouse_created
 import erp.composeapp.generated.resources.warehouse_deleted
@@ -42,7 +43,12 @@ class WarehouseViewModel(
     )
 
     val state = _state.onStart {
-        syncWarehouse()
+        syncWarehouse().onFailure {
+            snackbarManager.showErrorSnackbar(
+                getString(Res.string.error_syncing_warehouse), it
+            )
+        }
+        search("")
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),

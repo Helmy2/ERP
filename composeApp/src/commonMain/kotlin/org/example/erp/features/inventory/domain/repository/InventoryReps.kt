@@ -1,6 +1,5 @@
 package org.example.erp.features.inventory.domain.repository
 
-import kotlinx.coroutines.flow.Flow
 import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
 import org.example.erp.features.inventory.domain.entity.Warehouses
@@ -27,7 +26,7 @@ interface InventoryReps {
 
     suspend fun getWarehouse(code: String): Result<Warehouses>
 
-    suspend fun getAllWarehouse(code: String): Result<List<Warehouses>>
+    suspend fun getAllWarehouse(query: String): Result<List<Warehouses>>
 
     suspend fun createWarehouse(
         code: String, name: String, capacity: Long?, location: String
@@ -41,7 +40,9 @@ interface InventoryReps {
 
     suspend fun getCategory(code: String): Result<Category>
 
-    fun getCategories(): Flow<Result<List<Category>>>
+    fun syncCategories(): Result<Unit>
+
+    suspend fun getCategories(query: String): Result<List<Category>>
 
     suspend fun createCategory(
         code: String, name: String, parentCategoryId: String?

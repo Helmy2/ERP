@@ -2,8 +2,8 @@ package org.example.erp.features.inventory.domain.useCase.category
 
 import org.example.erp.features.inventory.domain.repository.InventoryReps
 
-class GetAllCategoryUseCase(
+class SyncCategoriesUseCase(
     private val repository: InventoryReps
 ) {
-    suspend operator fun invoke(query: String) = repository.getCategories(query)
+    operator fun invoke() = repository.syncCategories()
 }
