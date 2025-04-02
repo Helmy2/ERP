@@ -2,8 +2,8 @@ package org.example.erp.features.inventory.domain.useCase.warehouse
 
 import org.example.erp.features.inventory.domain.repository.InventoryReps
 
-class GetAllWarehouseUseCase(
+class SyncWarehouseUseCase(
     private val repository: InventoryReps
 ) {
-    suspend operator fun invoke(query: String) = repository.getAllWarehouse(query)
+    operator fun invoke() = repository.syncWarehouse()
 }

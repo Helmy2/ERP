@@ -19,6 +19,7 @@ import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUn
 import org.example.erp.features.inventory.domain.useCase.warehouse.CreateWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.GetAllWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.GetWarehouseByCodeUseCase
+import org.example.erp.features.inventory.domain.useCase.warehouse.SyncWarehouseUseCase
 import org.example.erp.features.inventory.domain.useCase.warehouse.UpdateWarehouseUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
@@ -26,6 +27,7 @@ import org.jetbrains.compose.resources.getString
 class WarehouseViewModel(
     private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
+    private val syncWarehouse: SyncWarehouseUseCase,
     private val getWarehouseByCode: GetWarehouseByCodeUseCase,
     private val getAllWarehouse: GetAllWarehouseUseCase,
     private val createWarehouse: CreateWarehouseUseCase,
@@ -35,83 +37,85 @@ class WarehouseViewModel(
 
     private val _state = MutableStateFlow(
         WarehouseState(
+            getUserById = { getDisplayName(it) },
+        )
+    )
+
+    val state = _state.onStart {
+        syncWarehouse()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = WarehouseState(
             getUserById = { getDisplayName(it) })
     )
 
-    val state = _state
-        .onStart {
-            leadInit()
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = WarehouseState(
-                getUserById = { getDisplayName(it) }
-            )
-        )
-
-    private fun leadInit() {
+    private fun search(query: String) {
         viewModelScope.launch {
-            getAllWarehouse().collect { result ->
-                result.fold(
-                    onSuccess = { list ->
-                        _state.update {
-                            it.copy(
-                                warehousesList = list.sortedBy { warehouse -> warehouse.code },
-                                loading = false
-                            )
-                        }
-                    },
-                    onFailure = {
-                        _state.update { it.copy(loading = false) }
-                        println("Exception in getAllWarehouse: $it")
-                    }
-                )
-            }
+            getAllWarehouse(query).fold(onSuccess = { list ->
+                _state.update {
+                    it.copy(
+                        searchResults = list.sortedBy { warehouse -> warehouse.code },
+                        loading = false
+                    )
+                }
+            }, onFailure = {
+                _state.update { it.copy(loading = false) }
+                println("Exception in getAllWarehouse: $it")
+            })
         }
     }
 
     fun handleEvent(event: WarehouseEvent) {
         when (event) {
-            WarehouseEvent.CreateWarehouse -> createWarehouse()
-            WarehouseEvent.DeleteWarehouse -> deleteWarehouse()
+            is WarehouseEvent.CreateWarehouse -> createWarehouse()
+            is WarehouseEvent.DeleteWarehouse -> deleteWarehouse()
             is WarehouseEvent.SearchWarehouse -> searchWarehouse(event.code)
             is WarehouseEvent.UpdateCapacity -> updateCapacity(event.capacity)
             is WarehouseEvent.UpdateCode -> updateCode(event.code)
             is WarehouseEvent.UpdateLocation -> updateLocation(event.location)
             is WarehouseEvent.UpdateName -> updateName(event.name)
-            WarehouseEvent.UpdateWarehouse -> updateWarehouse()
+            is WarehouseEvent.UpdateWarehouse -> updateWarehouse()
+            is WarehouseEvent.Search -> search(event.query)
+            is WarehouseEvent.UpdateIsQueryActive -> updateIsQueryActive(event.isQueryActive)
+            is WarehouseEvent.UpdateQuery -> updateQuery(event.query)
         }
+    }
+
+    private fun updateQuery(query: String) {
+        _state.update { it.copy(query = query) }
+        search(query)
+    }
+
+    private fun updateIsQueryActive(queryActive: Boolean) {
+        _state.update { it.copy(isQueryActive = queryActive) }
     }
 
     private fun searchWarehouse(code: String) {
         viewModelScope.launch {
             _state.update { it.copy(code = code, loading = true) }
 
-            getWarehouseByCode(code).fold(
-                onFailure = {
-                    _state.update {
-                        it.copy(
-                            name = "",
-                            capacity = null,
-                            location = "",
-                            selectedWarehouse = null,
-                            loading = false
-                        )
-                    }
-                },
-                onSuccess = { warehouses ->
-                    _state.update {
-                        it.copy(
-                            name = warehouses.name,
-                            capacity = warehouses.capacity,
-                            location = warehouses.location,
-                            selectedWarehouse = warehouses,
-                            loading = false
-                        )
-                    }
+            getWarehouseByCode(code).fold(onFailure = {
+                _state.update {
+                    it.copy(
+                        name = "",
+                        capacity = null,
+                        location = "",
+                        selectedWarehouse = null,
+                        loading = false
+                    )
                 }
-            )
+            }, onSuccess = { warehouses ->
+                _state.update {
+                    it.copy(
+                        name = warehouses.name,
+                        capacity = warehouses.capacity,
+                        location = warehouses.location,
+                        selectedWarehouse = warehouses,
+                        loading = false
+                    )
+                }
+            })
         }
     }
 
@@ -123,8 +127,7 @@ class WarehouseViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.warehouse_deleted))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_deleting_warehouse),
-                    it
+                    getString(Res.string.error_deleting_warehouse), it
                 )
             }
             _state.update { it.copy(loading = false) }
@@ -144,8 +147,7 @@ class WarehouseViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.warehouse_created))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_creating_warehouse),
-                    it
+                    getString(Res.string.error_creating_warehouse), it
                 )
             }
             _state.update { it.copy(loading = false) }
@@ -182,8 +184,7 @@ class WarehouseViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.warehouse_created))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_updating_warehouse),
-                    it
+                    getString(Res.string.error_updating_warehouse), it
                 )
             }
             _state.update { it.copy(loading = false) }

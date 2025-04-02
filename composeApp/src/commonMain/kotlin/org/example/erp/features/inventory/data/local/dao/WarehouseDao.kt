@@ -17,8 +17,8 @@ interface WarehouseDao {
     @Delete
     suspend fun delete(list: List<WarehouseResponse>)
 
-    @Query("SELECT * FROM WarehouseResponse")
-    fun getAll(): Flow<List<WarehouseResponse>>
+    @Query("SELECT * FROM WarehouseResponse WHERE name LIKE '%' || :query || '%' OR code LIKE '%' || :query || '%'")
+    suspend fun getAll(query: String): List<WarehouseResponse>
 
     @Query("SELECT * FROM WarehouseResponse WHERE code = :code")
     suspend fun getByCode(code: String): WarehouseResponse

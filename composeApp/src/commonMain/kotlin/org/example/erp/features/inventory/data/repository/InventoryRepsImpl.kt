@@ -68,6 +68,8 @@ class InventoryRepsImpl(
                     unitsOfMeasureDao.delete(toDelete)
                     unitsOfMeasureDao.insert(toInsert)
                 }
+            }.catch {
+                println("Exception in syncUnitsOfMeasure: $it")
             }.launchIn(this)
         }
     }
@@ -127,41 +129,34 @@ class InventoryRepsImpl(
     }
 
     @OptIn(SupabaseExperimental::class)
-    override fun getAllWarehouse(): Flow<Result<List<Warehouses>>> = channelFlow {
-        launch {
-            supabaseClient.from(
-                WAREHOUSE
-            ).selectAsFlow(
-                WarehouseResponse::id
-            ).onEach {
-                performDataComparison(
-                    localData = warehouseDao.getAll().first(),
-                    remoteData = it,
-                    keySelector = { response -> response.id },
-                    areItemsDifferent = { local, remote ->
-                        local.code != remote.code || local.name != remote.name || local.capacity != remote.capacity || local.location != remote.location
-                    },
-                ).apply {
-                    warehouseDao.delete(toDelete)
-                    warehouseDao.insert(toInsert)
-                }
-            }.catch {
-                trySend(Result.failure(it))
-            }.launchIn(this)
-        }
-        launch {
-            warehouseDao.getAll().map {
-                it.map { entity ->
-                    entity.toDomain()
-                }
-            }.catch {
-                trySend(Result.failure(it))
-            }.collectLatest {
-                trySend(Result.success(it))
+    override fun syncWarehouse(): Result<Unit> =
+        runCatching {
+            CoroutineScope(dispatcher).launch {
+                supabaseClient.from(
+                    WAREHOUSE
+                ).selectAsFlow(
+                    WarehouseResponse::id
+                ).onEach {
+                    performDataComparison(
+                        localData = warehouseDao.getAll(""),
+                        remoteData = it,
+                        keySelector = { response -> response.id },
+                        areItemsDifferent = { local, remote ->
+                            local.code != remote.code || local.name != remote.name || local.capacity != remote.capacity || local.location != remote.location
+                        },
+                    ).apply {
+                        warehouseDao.delete(toDelete)
+                        warehouseDao.insert(toInsert)
+                    }
+                }.catch {
+                    println("Exception in syncWarehouse: $it")
+                }.launchIn(this)
             }
         }
-    }
 
+    override suspend fun getAllWarehouse(query: String): Result<List<Warehouses>> = runCatching {
+        warehouseDao.getAll(query).map { it.toDomain() }
+    }
 
     override suspend fun createWarehouse(
         code: String, name: String, capacity: Long?, location: String

@@ -23,9 +23,11 @@ interface InventoryReps {
 
     suspend fun deleteUnitOfMeasure(code: String): Result<Unit>
 
+    fun syncWarehouse(): Result<Unit>
+
     suspend fun getWarehouse(code: String): Result<Warehouses>
 
-    fun getAllWarehouse(): Flow<Result<List<Warehouses>>>
+    suspend fun getAllWarehouse(code: String): Result<List<Warehouses>>
 
     suspend fun createWarehouse(
         code: String, name: String, capacity: Long?, location: String

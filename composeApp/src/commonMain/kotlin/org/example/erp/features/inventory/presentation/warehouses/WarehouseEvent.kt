@@ -10,4 +10,7 @@ sealed interface WarehouseEvent {
     data class UpdateName(val name: String) : WarehouseEvent
     data class UpdateCapacity(val capacity: Long) : WarehouseEvent
     data class UpdateLocation(val location: String) : WarehouseEvent
+    data class UpdateQuery(val query: String) : WarehouseEvent
+    data class UpdateIsQueryActive(val isQueryActive: Boolean) : WarehouseEvent
+    data class Search(val query: String) : WarehouseEvent
 }
