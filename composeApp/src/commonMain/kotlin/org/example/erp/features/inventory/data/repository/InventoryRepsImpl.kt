@@ -5,6 +5,7 @@ import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.realtime.selectAsFlow
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
@@ -49,15 +50,15 @@ class InventoryRepsImpl(
         }
 
     @OptIn(SupabaseExperimental::class)
-    override fun getAllUnitsOfMeasure(): Flow<Result<List<UnitsOfMeasure>>> = channelFlow {
-        launch {
+    override fun syncUnitsOfMeasure(): Result<Unit> = runCatching {
+        CoroutineScope(dispatcher).launch {
             supabaseClient.from(
                 UNIT_OF_MEASURE
             ).selectAsFlow(
                 UnitsOfMeasureResponse::id
             ).onEach {
                 performDataComparison(
-                    localData = unitsOfMeasureDao.getAll().first(),
+                    localData = unitsOfMeasureDao.getAll(""),
                     remoteData = it,
                     keySelector = { response -> response.id },
                     areItemsDifferent = { local, remote ->
@@ -67,21 +68,15 @@ class InventoryRepsImpl(
                     unitsOfMeasureDao.delete(toDelete)
                     unitsOfMeasureDao.insert(toInsert)
                 }
-            }.catch {
-                trySend(Result.failure(it))
             }.launchIn(this)
         }
-        launch {
-            unitsOfMeasureDao.getAll().map {
-                it.map { entity ->
-                    entity.toDomain()
-                }
-            }.catch {
-                trySend(Result.failure(it))
-            }.collectLatest {
-                trySend(Result.success(it))
-            }
-        }
+    }
+
+
+    override suspend fun getAllUnitsOfMeasure(
+        query: String
+    ): Result<List<UnitsOfMeasure>> = runCatching {
+        unitsOfMeasureDao.getAll(query).map { it.toDomain() }
     }
 
 

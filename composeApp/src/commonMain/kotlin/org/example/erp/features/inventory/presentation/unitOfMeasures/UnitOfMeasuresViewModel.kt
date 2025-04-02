@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.error_creating_unit_of_measure
 import erp.composeapp.generated.resources.error_deleting_unit_of_measure
+import erp.composeapp.generated.resources.error_syncing_units_of_measure
 import erp.composeapp.generated.resources.error_updating_unit_of_measure
 import erp.composeapp.generated.resources.unit_of_measure_created
 import erp.composeapp.generated.resources.unit_of_measure_deleted
@@ -20,6 +21,7 @@ import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.CreateUn
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetAllUnitsOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetUnitOfMeasuresByCodeUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.SyncUnitsOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.UpdateUnitOfMeasureUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
@@ -27,6 +29,7 @@ import org.jetbrains.compose.resources.getString
 class UnitOfMeasuresViewModel(
     private val getDisplayName: GetDisplayNameUseCase,
     private val snackbarManager: SnackbarManager,
+    private val syncUnitsOfMeasure: SyncUnitsOfMeasureUseCase,
     private val getUnitOfMeasureByCode: GetUnitOfMeasuresByCodeUseCase,
     private val getAllUnitsOfMeasure: GetAllUnitsOfMeasureUseCase,
     private val createUnitOfMeasure: CreateUnitOfMeasureUseCase,
@@ -38,8 +41,13 @@ class UnitOfMeasuresViewModel(
         UnitOfMeasuresState(
             getUserById = { getDisplayName(it) })
     )
+
     val state = _state.onStart {
-        leadInit()
+        syncUnitsOfMeasure().onFailure {
+            snackbarManager.showErrorSnackbar(
+                getString(Res.string.error_syncing_units_of_measure), it
+            )
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -47,24 +55,19 @@ class UnitOfMeasuresViewModel(
             getUserById = { getDisplayName(it) })
     )
 
-    private fun leadInit() {
+    private fun search(query: String) {
         viewModelScope.launch {
-            getAllUnitsOfMeasure().collect { result ->
-                result.fold(
-                    onSuccess = { list ->
-                        _state.update {
-                            it.copy(
-                                unitsOfMeasureList = list.sortedBy { measure -> measure.code },
-                                loading = false
-                            )
-                        }
-                    },
-                    onFailure = {
-                        _state.update { it.copy(loading = false) }
-                        println("Exception in getAllUnitsOfMeasure: $it")
-                    }
-                )
-            }
+            _state.update { it.copy(loading = true) }
+            getAllUnitsOfMeasure(query).fold(onSuccess = { list ->
+                _state.update { it.copy(searchResults = list, loading = false) }
+            }, onFailure = {
+                _state.update { measuresState ->
+                    measuresState.copy(
+                        searchResults = emptyList(), loading = false
+                    )
+                }
+                println("Exception in getAllUnitsOfMeasure: $it")
+            })
         }
     }
 
@@ -77,7 +80,19 @@ class UnitOfMeasuresViewModel(
             is UnitOfMeasuresEvent.UpdateDescription -> updateDescription(event.description)
             is UnitOfMeasuresEvent.UpdateName -> updateName(event.name)
             is UnitOfMeasuresEvent.SearchUnitOfMeasure -> findUnitOfMeasureByCode(event.code)
+            is UnitOfMeasuresEvent.Search -> search(event.query)
+            is UnitOfMeasuresEvent.UpdateIsQueryActive -> updateIsQueryActive(event.isQueryActive)
+            is UnitOfMeasuresEvent.UpdateQuery -> updateQuery(event.query)
         }
+    }
+
+    private fun updateQuery(query: String) {
+        _state.update { it.copy(query = query) }
+        search(query)
+    }
+
+    private fun updateIsQueryActive(queryActive: Boolean) {
+        _state.update { it.copy(isQueryActive = queryActive) }
     }
 
     private fun updateName(name: String) {
@@ -96,28 +111,25 @@ class UnitOfMeasuresViewModel(
         viewModelScope.launch {
             _state.update { it.copy(code = code, loading = true) }
 
-            getUnitOfMeasureByCode(code).fold(
-                onFailure = {
-                    _state.update {
-                        it.copy(
-                            name = "",
-                            description = "",
-                            selectedUnitOfMeasure = null,
-                            loading = false
-                        )
-                    }
-                },
-                onSuccess = { unitOfMeasure ->
-                    _state.update {
-                        it.copy(
-                            name = unitOfMeasure.name,
-                            description = unitOfMeasure.description ?: "",
-                            selectedUnitOfMeasure = unitOfMeasure,
-                            loading = false
-                        )
-                    }
+            getUnitOfMeasureByCode(code).fold(onFailure = {
+                _state.update {
+                    it.copy(
+                        name = "",
+                        description = "",
+                        selectedUnitOfMeasure = null,
+                        loading = false
+                    )
                 }
-            )
+            }, onSuccess = { unitOfMeasure ->
+                _state.update {
+                    it.copy(
+                        name = unitOfMeasure.name,
+                        description = unitOfMeasure.description ?: "",
+                        selectedUnitOfMeasure = unitOfMeasure,
+                        loading = false
+                    )
+                }
+            })
         }
     }
 
@@ -134,8 +146,7 @@ class UnitOfMeasuresViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_updated))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_updating_unit_of_measure),
-                    it
+                    getString(Res.string.error_updating_unit_of_measure), it
                 )
             }
             _state.update { it.copy(loading = false) }
@@ -150,8 +161,7 @@ class UnitOfMeasuresViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_deleted))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_deleting_unit_of_measure),
-                    it
+                    getString(Res.string.error_deleting_unit_of_measure), it
                 )
             }
         }
@@ -169,8 +179,7 @@ class UnitOfMeasuresViewModel(
                 snackbarManager.showSnackbar(getString(Res.string.unit_of_measure_created))
             }.onFailure {
                 snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_creating_unit_of_measure),
-                    it
+                    getString(Res.string.error_creating_unit_of_measure), it
                 )
             }
             _state.update { it.copy(loading = false) }

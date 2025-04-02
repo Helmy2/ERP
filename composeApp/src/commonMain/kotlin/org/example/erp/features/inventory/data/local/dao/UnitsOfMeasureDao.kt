@@ -16,8 +16,8 @@ interface UnitsOfMeasureDao {
     @Delete
     suspend fun delete(list: List<UnitsOfMeasureResponse>)
 
-    @Query("SELECT * FROM UnitsOfMeasureResponse")
-    fun getAll(): Flow<List<UnitsOfMeasureResponse>>
+    @Query("SELECT * FROM UnitsOfMeasureResponse WHERE name LIKE '%' || :query || '%' OR code LIKE '%' || :query || '%'")
+    suspend fun getAll(query: String): List<UnitsOfMeasureResponse>
 
     @Query("SELECT * FROM UnitsOfMeasureResponse WHERE code = :code")
     suspend fun getByCode(code: String): UnitsOfMeasureResponse

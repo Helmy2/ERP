@@ -5,6 +5,5 @@ import org.example.erp.features.inventory.domain.repository.InventoryReps
 class GetAllUnitsOfMeasureUseCase(
     private val repository: InventoryReps
 ) {
-    operator fun invoke() = repository.getAllUnitsOfMeasure()
-
+    suspend operator fun invoke(query: String) = repository.getAllUnitsOfMeasure(query)
 }

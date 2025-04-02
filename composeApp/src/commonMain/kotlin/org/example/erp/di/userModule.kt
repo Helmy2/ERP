@@ -1,7 +1,6 @@
 package org.example.erp.di
 
 import io.github.jan.supabase.auth.Auth
-import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.minimalSettings
 import io.github.jan.supabase.createSupabaseClient
 import kotlinx.coroutines.Dispatchers
@@ -20,8 +19,8 @@ import org.example.erp.features.user.domain.usecase.LogoutUseCase
 import org.example.erp.features.user.domain.usecase.RegisterUseCase
 import org.example.erp.features.user.domain.usecase.UpdateNameUseCase
 import org.example.erp.features.user.presentation.login.LoginViewModel
-import org.example.erp.features.user.presentation.setting.SettingsViewModel
 import org.example.erp.features.user.presentation.register.RegisterViewModel
+import org.example.erp.features.user.presentation.setting.SettingsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

@@ -7,7 +7,11 @@ import org.example.erp.features.inventory.domain.entity.Warehouses
 
 
 interface InventoryReps {
-    fun getAllUnitsOfMeasure(): Flow<Result<List<UnitsOfMeasure>>>
+    fun syncUnitsOfMeasure(): Result<Unit>
+
+    suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure>
+
+    suspend fun getAllUnitsOfMeasure(query: String): Result<List<UnitsOfMeasure>>
 
     suspend fun createUnitOfMeasure(
         code: String, name: String, description: String
@@ -18,6 +22,8 @@ interface InventoryReps {
     ): Result<Unit>
 
     suspend fun deleteUnitOfMeasure(code: String): Result<Unit>
+
+    suspend fun getWarehouse(code: String): Result<Warehouses>
 
     fun getAllWarehouse(): Flow<Result<List<Warehouses>>>
 
@@ -31,6 +37,8 @@ interface InventoryReps {
 
     suspend fun deleteWarehouse(code: String): Result<Unit>
 
+    suspend fun getCategory(code: String): Result<Category>
+
     fun getCategories(): Flow<Result<List<Category>>>
 
     suspend fun createCategory(
@@ -42,7 +50,4 @@ interface InventoryReps {
     ): Result<Unit>
 
     suspend fun deleteCategory(code: String): Result<Unit>
-    suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure>
-    suspend fun getCategory(code: String): Result<Category>
-    suspend fun getWarehouse(code: String): Result<Warehouses>
 }
