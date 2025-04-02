@@ -4,35 +4,39 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
-import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
+import org.example.erp.BuildKonfig
 import org.example.erp.core.domain.exceptions.ExceptionMapper
 import org.example.erp.core.util.DISPLAY_NAME_KEY
-import org.example.erp.core.util.SupabaseConfig.USER_ROLE
 import org.example.erp.features.user.domain.entity.User
 import org.example.erp.features.user.domain.entity.toDomainUser
 import org.example.erp.features.user.domain.repository.UserRepo
 
 class UserRepoImpl(
     private val supabaseClient: SupabaseClient,
+    private val adminClient: SupabaseClient,
     private val exceptionMapper: ExceptionMapper,
     private val dispatcher: CoroutineDispatcher,
 ) : UserRepo {
 
+    init {
+        CoroutineScope(dispatcher).launch {
+            adminClient.auth.importAuthToken(BuildKonfig.supabaseSecret)
+        }
+    }
+
     override val currentUser: Flow<Result<User?>> = supabaseClient.auth.sessionStatus.map {
         try {
-            val user = supabaseClient.auth.currentUserOrNull()?.toDomainUser(
-                getDisplayName(supabaseClient.auth.currentUserOrNull()?.id ?: "")
-            )
-            Result.success(user)
+            Result.success(supabaseClient.auth.currentUserOrNull()?.toDomainUser())
         } catch (e: Exception) {
             Result.failure(exceptionMapper.map(e))
         }
@@ -40,13 +44,8 @@ class UserRepoImpl(
         emit(Result.failure(exceptionMapper.map(e)))
     }
 
-    override suspend fun getDisplayName(id: String?): String {
-        val name = supabaseClient.from(USER_ROLE)
-            .select {
-                filter { User::id eq id }
-            }.decodeSingle<Map<String, String?>>()
-
-        return name[DISPLAY_NAME_KEY] ?: ""
+    override suspend fun getUserById(id: String): Result<User> = runCatching {
+        adminClient.auth.admin.retrieveUserById(id).toDomainUser()
     }
 
 
@@ -61,17 +60,10 @@ class UserRepoImpl(
 
     override suspend fun updateDisplayName(name: String): Result<Unit> = withContext(dispatcher) {
         try {
-            supabaseClient.auth.currentUserOrNull()?.id?.let {
-                supabaseClient.from(USER_ROLE)
-                    .update(
-                        buildJsonObject {
-                            put(DISPLAY_NAME_KEY, name)
-                        },
-                    ) {
-                        filter {
-                            User::id eq it
-                        }
-                    }
+            supabaseClient.auth.updateUser {
+                data {
+                    put(DISPLAY_NAME_KEY, name)
+                }
             }
             Result.success(Unit)
         } catch (e: Exception) {

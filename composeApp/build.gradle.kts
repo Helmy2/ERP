@@ -149,11 +149,14 @@ buildkonfig {
         )
         val supabaseKey = localProperties.getProperty("supabaseKey")
         val supabaseUrl = localProperties.getProperty("supabaseUrl")
+        val supabaseSecret = localProperties.getProperty("supabaseSecret")
 
         require(supabaseKey.isNotEmpty())
         require(supabaseUrl.isNotEmpty())
+        require(supabaseSecret.isNotEmpty())
 
         buildConfigField(STRING, "supabaseKey", supabaseKey)
         buildConfigField(STRING, "supabaseUrl", supabaseUrl)
+        buildConfigField(STRING, "supabaseSecret", supabaseSecret)
     }
 }

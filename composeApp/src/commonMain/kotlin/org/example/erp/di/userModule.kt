@@ -1,6 +1,11 @@
 package org.example.erp.di
 
+import io.github.jan.supabase.auth.Auth
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.minimalSettings
+import io.github.jan.supabase.createSupabaseClient
 import kotlinx.coroutines.Dispatchers
+import org.example.erp.BuildKonfig
 import org.example.erp.core.domain.usecase.ChangeLanguageUseCase
 import org.example.erp.core.domain.usecase.GetLanguageUseCase
 import org.example.erp.features.user.data.exception.AuthExceptionMapper
@@ -24,8 +29,18 @@ import org.koin.dsl.module
 val userModule = module {
 
     single<UserRepo> {
+        val adminClient = createSupabaseClient(
+            supabaseKey = BuildKonfig.supabaseKey,
+            supabaseUrl = BuildKonfig.supabaseUrl
+        ) {
+            install(Auth) {
+                minimalSettings()
+            }
+        }
+
         UserRepoImpl(
             supabaseClient = get(),
+            adminClient = adminClient,
             exceptionMapper = AuthExceptionMapper(),
             dispatcher = Dispatchers.IO
         )
