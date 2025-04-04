@@ -1,9 +1,9 @@
 package org.example.erp.features.inventory.domain.useCase.category
 
-import org.example.erp.features.inventory.domain.repository.InventoryReps
+import org.example.erp.features.inventory.domain.repository.CategoryRepo
 
 class GetCategoryByCodeUseCase(
-    private val repository: InventoryReps
+    private val repository: CategoryRepo
 ) {
     suspend operator fun invoke(code: String) = repository.getCategory(code)
 }

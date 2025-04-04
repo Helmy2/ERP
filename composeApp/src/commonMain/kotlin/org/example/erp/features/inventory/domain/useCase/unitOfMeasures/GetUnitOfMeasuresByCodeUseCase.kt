@@ -1,9 +1,9 @@
 package org.example.erp.features.inventory.domain.useCase.unitOfMeasures
 
-import org.example.erp.features.inventory.domain.repository.InventoryReps
+import org.example.erp.features.inventory.domain.repository.UnitsOfMeasureRepo
 
 class GetUnitOfMeasuresByCodeUseCase(
-    private val repository: InventoryReps
+    private val repository: UnitsOfMeasureRepo
 ) {
     suspend operator fun invoke(code: String) = repository.getUnitOfMeasure(code)
 }

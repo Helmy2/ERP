@@ -2,8 +2,12 @@ package org.example.erp.di
 
 import kotlinx.coroutines.Dispatchers
 import org.example.erp.core.data.core.AppDatabase
-import org.example.erp.features.inventory.data.repository.InventoryRepsImpl
-import org.example.erp.features.inventory.domain.repository.InventoryReps
+import org.example.erp.features.inventory.data.repository.CategoryRepoImpl
+import org.example.erp.features.inventory.data.repository.UnitsOfMeasureRepoImpl
+import org.example.erp.features.inventory.data.repository.WarehouseRepoImpl
+import org.example.erp.features.inventory.domain.repository.CategoryRepo
+import org.example.erp.features.inventory.domain.repository.UnitsOfMeasureRepo
+import org.example.erp.features.inventory.domain.repository.WarehouseRepo
 import org.example.erp.features.inventory.domain.useCase.category.CreateCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.DeleteCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.GetAllCategoryUseCase
@@ -30,25 +34,23 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val inventoryModule = module {
-    single<InventoryReps> {
-        InventoryRepsImpl(
-            get(), get(), get(), get(),
-            dispatcher = Dispatchers.IO,
-        )
-    }
 
-    factory {
-        get<AppDatabase>().inventoryDao()
-    }
+    single { get<AppDatabase>().inventoryDao() }
 
-    factory {
-        get<AppDatabase>().warehouseDao()
-    }
+    single { get<AppDatabase>().warehouseDao() }
 
-    factory {
-        get<AppDatabase>().categoryDao()
-    }
+    single { get<AppDatabase>().categoryDao() }
 
+    viewModel { InventoryViewModel() }
+
+    viewModel { UnitOfMeasuresViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { CategoryViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+
+
+    single<UnitsOfMeasureRepo> {
+        UnitsOfMeasureRepoImpl(get(), get(), Dispatchers.IO)
+    }
     factory { SyncUnitsOfMeasureUseCase(get()) }
     factory { GetUnitOfMeasuresByCodeUseCase(get()) }
     factory { CreateUnitOfMeasureUseCase(get()) }
@@ -56,6 +58,9 @@ val inventoryModule = module {
     factory { UpdateUnitOfMeasureUseCase(get()) }
     factory { DeleteUnitOfMeasureUseCase(get()) }
 
+    single<WarehouseRepo> {
+        WarehouseRepoImpl(get(), get(), Dispatchers.IO)
+    }
     factory { SyncWarehouseUseCase(get()) }
     factory { GetWarehouseByCodeUseCase(get()) }
     factory { CreateWarehouseUseCase(get()) }
@@ -63,15 +68,13 @@ val inventoryModule = module {
     factory { UpdateWarehouseUseCase(get()) }
     factory { DeleteWarehouseUseCase(get()) }
 
+    single<CategoryRepo> {
+        CategoryRepoImpl(get(), get(), Dispatchers.IO)
+    }
     factory { SyncCategoriesUseCase(get()) }
     factory { GetCategoryByCodeUseCase(get()) }
     factory { CreateCategoryUseCase(get()) }
     factory { GetAllCategoryUseCase(get()) }
     factory { UpdateCategoryUseCase(get()) }
     factory { DeleteCategoryUseCase(get()) }
-
-    viewModel { InventoryViewModel() }
-    viewModel { UnitOfMeasuresViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { CategoryViewModel(get(), get(), get(), get(), get(), get(), get(),get()) }
 }
