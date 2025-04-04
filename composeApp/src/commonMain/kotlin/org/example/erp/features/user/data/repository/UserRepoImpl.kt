@@ -17,6 +17,7 @@ import kotlinx.serialization.json.put
 import org.example.erp.BuildKonfig
 import org.example.erp.core.domain.exceptions.ExceptionMapper
 import org.example.erp.core.util.DISPLAY_NAME_KEY
+import org.example.erp.features.user.data.exception.AuthException
 import org.example.erp.features.user.domain.entity.User
 import org.example.erp.features.user.domain.entity.toDomainUser
 import org.example.erp.features.user.domain.repository.UserRepo
@@ -71,15 +72,21 @@ class UserRepoImpl(
         }
     }
 
-    override fun isUserLongedIn(): Flow<Boolean> {
+    override fun isUserLongedIn(): Flow<Result<Boolean>> {
         return channelFlow {
-            supabaseClient.auth.sessionStatus.collectLatest {
+            supabaseClient.auth.sessionStatus
+                .collectLatest {
                 when (it) {
-                    is SessionStatus.Authenticated -> trySend(true)
-                    is SessionStatus.NotAuthenticated -> trySend(false)
+                    is SessionStatus.Authenticated -> trySend(Result.success(true))
+                    is SessionStatus.NotAuthenticated -> trySend(Result.success(false))
+                    is SessionStatus.RefreshFailure -> Result.failure<Boolean>(
+                        AuthException.AuthenticationException("Refresh Failure")
+                    )
                     else -> {}
                 }
             }
+        }.catch {
+            emit(Result.failure(exceptionMapper.map(it)))
         }
     }
 

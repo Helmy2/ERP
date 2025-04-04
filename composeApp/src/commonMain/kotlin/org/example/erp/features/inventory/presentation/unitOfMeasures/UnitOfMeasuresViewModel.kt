@@ -48,6 +48,7 @@ class UnitOfMeasuresViewModel(
                 getString(Res.string.error_syncing_units_of_measure), it
             )
         }
+        search("")
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),

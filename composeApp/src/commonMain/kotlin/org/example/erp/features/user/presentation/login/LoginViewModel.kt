@@ -42,9 +42,8 @@ class LoginViewModel(
     private fun observeCurrentUser() {
         viewModelScope.launch {
             isUserLongedInFlowUseCase().collectLatest {
-                if (it) {
+                if (it.getOrNull() == true)
                     navigator.navigate(Destination.Main)
-                }
             }
         }
     }
@@ -79,7 +78,7 @@ class LoginViewModel(
         _state.update { it.copy(loading = false) }
         result.fold(
             onSuccess = { onSuccess() },
-            onFailure = { snackbarManager.showErrorSnackbar(it.message.orEmpty(),it) },
+            onFailure = { snackbarManager.showErrorSnackbar(it.message.orEmpty(), it) },
         )
     }
 }

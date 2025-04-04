@@ -61,6 +61,10 @@ fun SearchScreen(
     searchResults: @Composable () -> Unit,
     mainContent: @Composable () -> Unit,
 ) {
+    BackHandler {
+        if (isSearchActive) onSearchActiveChange(false)
+        else onBack()
+    }
     Box(
         modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp).fillMaxSize()
             .semantics { isTraversalGroup = true }) {

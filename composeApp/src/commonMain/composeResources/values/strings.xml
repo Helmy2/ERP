@@ -85,4 +85,7 @@
     <string name="no_categories_found">You Should create a category first</string>
     <string name="parent_category_error">Parent and Child can't be the same category</string>
     <string name="add_item">Add item</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="back_online">Back online</string>
 </resources>

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.example.erp.features.user.domain.entity.User
 
 interface UserRepo {
-    fun isUserLongedIn(): Flow<Boolean>
+    fun isUserLongedIn(): Flow<Result<Boolean>>
 
     suspend fun signInWithEmailAndPassword(
         email: String, password: String

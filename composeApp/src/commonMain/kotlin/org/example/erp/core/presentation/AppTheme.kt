@@ -65,7 +65,6 @@ fun AppTheme(
             Language.Arabic -> LayoutDirection.Rtl
         }
     ) {
-
         MaterialTheme(
             colorScheme = getDynamicColorScheme(
                 systemIsDark,

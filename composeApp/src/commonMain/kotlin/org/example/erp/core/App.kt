@@ -16,6 +16,9 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import erp.composeapp.generated.resources.Res
+import erp.composeapp.generated.resources.back_online
+import erp.composeapp.generated.resources.no_internet
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.navigation.TopLevelRoutes
@@ -23,6 +26,8 @@ import org.example.erp.core.domain.snackbar.SnackbarManager
 import org.example.erp.core.presentation.navigation.AppNavHost
 import org.example.erp.core.presentation.navigation.mainNavigationItems
 import org.example.erp.core.util.Connectivity
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -59,12 +64,12 @@ fun MainScaffold(
 
     LaunchedEffect(state) {
         if (state.isDisconnected) {
-            snackbarManager.showSnackbar("No internet connection")
+            snackbarManager.showSnackbar(getString(Res.string.no_internet))
             isReconnected = true
         }
 
         if (isReconnected && state.isConnected) {
-            snackbarManager.showSnackbar("Back online")
+            snackbarManager.showSnackbar(getString(Res.string.back_online))
         }
     }
 

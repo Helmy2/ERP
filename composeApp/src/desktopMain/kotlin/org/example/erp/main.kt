@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,12 +16,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import erp.composeapp.generated.resources.Res
+import erp.composeapp.generated.resources.something_went_wrong
 import org.example.erp.core.App
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.presentation.AppTheme
 import org.example.erp.di.initKoin
 import org.example.erp.features.user.domain.usecase.IsUserLongedInUseCase
 import org.jetbrains.compose.reload.DevelopmentEntryPoint
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 fun main() {
@@ -34,16 +38,27 @@ fun main() {
             DevelopmentEntryPoint {
                 val isUserLongedInUseCase = koinInject<IsUserLongedInUseCase>()
 
-                var startDestination by remember { mutableStateOf<Destination?>(null) }
+                var entryDestination by remember { mutableStateOf<Result<Destination>?>(null) }
 
                 LaunchedEffect(Unit) {
-                    startDestination =
-                        if (isUserLongedInUseCase()) Destination.Main else Destination.Auth
+                    isUserLongedInUseCase().also {
+                        entryDestination =
+                            it.map { flag -> if (flag) Destination.Main else Destination.Auth }
+                    }
                 }
                 AppTheme {
-                    AnimatedContent(startDestination != null) {
+                    AnimatedContent(entryDestination != null) {
                         if (it) {
-                            App(startDestination!!)
+                            entryDestination!!.onSuccess { destination ->
+                                App(destination)
+                            }.onFailure {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Text(stringResource(Res.string.something_went_wrong))
+                                }
+                            }
                         } else {
                             Box(
                                 modifier = Modifier.fillMaxSize(),
