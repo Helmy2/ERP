@@ -1,9 +1,9 @@
 package org.example.erp.features.inventory.domain.useCase.unitOfMeasures
 
-import org.example.erp.features.inventory.domain.repository.UnitsOfMeasureRepo
+import org.example.erp.features.inventory.domain.repository.UnitOfMeasureRepo
 
 class UpdateUnitOfMeasureUseCase(
-    private val repository: UnitsOfMeasureRepo
+    private val repository: UnitOfMeasureRepo
 ) {
     suspend operator fun invoke(
         id: String,

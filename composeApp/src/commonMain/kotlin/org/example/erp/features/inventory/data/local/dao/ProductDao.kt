@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import org.example.erp.features.inventory.data.model.ProductResponse
-import org.example.erp.features.inventory.data.model.WarehouseResponse
 
 @Dao
 interface ProductDao {

@@ -13,7 +13,7 @@ class UpdateProductUseCase(
         description: String,
         unitPrice: Double,
         costPrice: Double,
-        categoryId: String,
-        unitOfMeasureId: String
+        categoryId: String?,
+        unitOfMeasureId: String?
     ): Result<Unit> = productRepo.updateProduct(id, code, name, sku, description, unitPrice, costPrice, categoryId, unitOfMeasureId)
 }

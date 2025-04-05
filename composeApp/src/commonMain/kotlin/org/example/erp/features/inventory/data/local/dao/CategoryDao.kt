@@ -19,10 +19,10 @@ interface CategoryDao {
     suspend fun getAll(query: String): List<CategoryResponse>
 
     @Query("SELECT * FROM CategoryResponse WHERE code = :code")
-    suspend fun getByCode(code: String): CategoryResponse
+    suspend fun getByCode(code: String): CategoryResponse?
 
     @Query("SELECT * FROM CategoryResponse WHERE id = :id")
-    suspend fun getById(id: String): CategoryResponse
+    suspend fun getById(id: String): CategoryResponse?
 
     @Query("SELECT * FROM CategoryResponse WHERE parentCategoryId = :id")
     suspend fun getChildren(id: String): List<CategoryResponse>

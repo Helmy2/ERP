@@ -20,7 +20,7 @@ import org.example.erp.features.inventory.data.model.WarehouseResponse
 
 @Database(
     entities = [UnitsOfMeasureResponse::class, WarehouseResponse::class, CategoryResponse::class, ProductResponse::class],
-    version = 4
+    version = 6
 )
 @TypeConverters(InstantConverter::class)
 @ConstructedBy(AppDatabaseConstructor::class)

@@ -19,5 +19,5 @@ interface WarehouseDao {
     suspend fun getAll(query: String): List<WarehouseResponse>
 
     @Query("SELECT * FROM WarehouseResponse WHERE code = :code")
-    suspend fun getByCode(code: String): WarehouseResponse
+    suspend fun getByCode(code: String): WarehouseResponse?
 }

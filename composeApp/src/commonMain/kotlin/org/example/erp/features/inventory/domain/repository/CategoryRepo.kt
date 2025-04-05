@@ -4,7 +4,9 @@ import org.example.erp.features.inventory.domain.entity.Category
 
 interface CategoryRepo {
 
-    suspend fun getCategory(code: String): Result<Category>
+    suspend fun getCategoryByCode(code: String): Result<Category>
+
+    suspend fun getCategoryById(id: String): Result<Category>
 
     fun syncCategories(): Result<Unit>
 

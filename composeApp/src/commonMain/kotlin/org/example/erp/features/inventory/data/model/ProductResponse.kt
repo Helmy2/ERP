@@ -26,7 +26,7 @@ data class ProductResponse(
     @SerialName(SupabaseConfig.COST_PRICE_ROW)
     val costPrice: Double? = null,
     @SerialName(SupabaseConfig.UNIT_OF_MEASURE_ID_ROW)
-    val unitOfMeasureId: String,
+    val unitOfMeasureId: String? = null,
     @SerialName(SupabaseConfig.DELETED_AT_ROW)
     val deletedAt: Instant? = null,
     @SerialName(SupabaseConfig.CREATED_AT_ROW)

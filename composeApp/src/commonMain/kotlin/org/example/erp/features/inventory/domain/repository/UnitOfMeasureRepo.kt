@@ -1,13 +1,15 @@
 package org.example.erp.features.inventory.domain.repository
 
-import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
+import org.example.erp.features.inventory.domain.entity.UnitOfMeasure
 
-interface UnitsOfMeasureRepo {
+interface UnitOfMeasureRepo {
     fun syncUnitsOfMeasure(): Result<Unit>
 
-    suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure>
+    suspend fun getUnitOfMeasureByCode(code: String): Result<UnitOfMeasure>
 
-    suspend fun getAllUnitsOfMeasure(query: String): Result<List<UnitsOfMeasure>>
+    suspend fun getUnitOfMeasuresById(id: String): Result<UnitOfMeasure>
+
+    suspend fun getAllUnitsOfMeasure(query: String): Result<List<UnitOfMeasure>>
 
     suspend fun createUnitOfMeasure(
         code: String, name: String, description: String

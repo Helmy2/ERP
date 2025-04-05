@@ -88,4 +88,12 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="no_internet">No internet connection</string>
     <string name="back_online">Back online</string>
+    <string name="product_created">Product created successfully</string>
+    <string name="error_creating_product">Error creating product</string>
+    <string name="product_updated">Product updated successfully</string>
+    <string name="error_updating_product">Error updating product</string>
+    <string name="product_deleted">Product deleted successfully</string>
+    <string name="error_deleting_product">Error deleting product</string>
+    <string name="products">Products</string>
+
 </resources>

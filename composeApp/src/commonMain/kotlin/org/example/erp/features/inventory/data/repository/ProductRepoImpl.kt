@@ -20,14 +20,14 @@ import org.example.erp.features.inventory.data.model.ProductResponse
 import org.example.erp.features.inventory.domain.entity.Product
 import org.example.erp.features.inventory.domain.mapper.toDomain
 import org.example.erp.features.inventory.domain.repository.ProductRepo
-import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByCodeUseCase
-import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetUnitOfMeasuresByCodeUseCase
+import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByIdUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetUnitOfMeasuresByIdUseCase
 
 class ProductRepoImpl(
     private val supabaseClient: SupabaseClient,
     private val productDao: ProductDao,
-    private val getCategoryByCodeUseCase: GetCategoryByCodeUseCase,
-    private val getUnitsOfMeasureByCodeUseCase: GetUnitOfMeasuresByCodeUseCase,
+    private val getCategoryByIdUseCase: GetCategoryByIdUseCase,
+    private val getUnitsOfMeasureByIdUseCase: GetUnitOfMeasuresByIdUseCase,
     private val dispatcher: CoroutineDispatcher
 ) : ProductRepo {
 
@@ -59,15 +59,28 @@ class ProductRepoImpl(
     override suspend fun getProduct(code: String): Result<Product> = runCatching {
         val response = productDao.getByCode(code)
         response.toDomain(
-            category = getCategoryByCodeUseCase(
+            category = getCategoryByIdUseCase(
                 response.categoryId ?: throw Exception("Category not found")
-            ).getOrThrow(),
-            unitOfMeasure = getUnitsOfMeasureByCodeUseCase(response.unitOfMeasureId).getOrThrow()
+            ).getOrNull(),
+            unitOfMeasure = getUnitsOfMeasureByIdUseCase(
+                response.unitOfMeasureId ?: throw Exception("Unit of measure not found")
+            ).getOrNull()
         )
     }
 
     override suspend fun getAllProduct(query: String): Result<List<Product>> {
-        TODO("Not yet implemented")
+        return runCatching {
+            productDao.getAll(query).map { response ->
+                response.toDomain(
+                    category = getCategoryByIdUseCase(
+                        response.categoryId ?: throw Exception("Category not found")
+                    ).getOrNull(),
+                    unitOfMeasure = getUnitsOfMeasureByIdUseCase(
+                        response.unitOfMeasureId ?: throw Exception("Unit of measure not found")
+                    ).getOrNull()
+                )
+            }
+        }
     }
 
     override suspend fun createProduct(
@@ -77,8 +90,8 @@ class ProductRepoImpl(
         description: String,
         unitPrice: Double,
         costPrice: Double,
-        categoryId: String,
-        unitOfMeasureId: String
+        categoryId: String?,
+        unitOfMeasureId: String?
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(SupabaseConfig.PRODUCT_TABLE).insert(
@@ -104,8 +117,8 @@ class ProductRepoImpl(
         description: String,
         unitPrice: Double,
         costPrice: Double,
-        categoryId: String,
-        unitOfMeasureId: String
+        categoryId: String?,
+        unitOfMeasureId: String?
     ): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(SupabaseConfig.PRODUCT_TABLE).update(

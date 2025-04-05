@@ -20,14 +20,14 @@ import org.example.erp.features.inventory.domain.entity.Permissions
 import org.example.erp.features.inventory.domain.entity.Product
 import org.example.erp.features.inventory.domain.entity.RolePermissions
 import org.example.erp.features.inventory.domain.entity.StockLevels
-import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
+import org.example.erp.features.inventory.domain.entity.UnitOfMeasure
 import org.example.erp.features.inventory.domain.entity.UserRoles
 import org.example.erp.features.inventory.domain.entity.Warehouses
 
 
 // Mapper extension functions
 
-fun UnitsOfMeasureResponse.toDomain(): UnitsOfMeasure = UnitsOfMeasure(
+fun UnitsOfMeasureResponse.toDomain(): UnitOfMeasure = UnitOfMeasure(
     id = id,
     code = code,
     name = name,
@@ -52,8 +52,8 @@ fun CategoryResponse.toDomain(children: List<Category>, parentCategory: Category
     )
 
 fun ProductResponse.toDomain(
-    category: Category,
-    unitOfMeasure: UnitsOfMeasure
+    category: Category?,
+    unitOfMeasure: UnitOfMeasure?
 ): Product = Product(
     id = id,
     code = code, name = name,

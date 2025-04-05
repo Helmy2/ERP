@@ -2,7 +2,7 @@ package org.example.erp.features.inventory.domain.entity
 
 import kotlinx.datetime.Instant
 
-data class UnitsOfMeasure(
+data class UnitOfMeasure(
     override val id: String,
     override val code: String,
     val name: String,

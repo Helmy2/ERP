@@ -17,19 +17,26 @@ import org.example.erp.core.util.SupabaseConfig
 import org.example.erp.core.util.performDataComparison
 import org.example.erp.features.inventory.data.local.dao.UnitsOfMeasureDao
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
-import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
+import org.example.erp.features.inventory.domain.entity.UnitOfMeasure
 import org.example.erp.features.inventory.domain.mapper.toDomain
-import org.example.erp.features.inventory.domain.repository.UnitsOfMeasureRepo
+import org.example.erp.features.inventory.domain.repository.UnitOfMeasureRepo
 
-class UnitsOfMeasureRepoImpl(
+class UnitOfMeasureRepoImpl(
     private val supabaseClient: SupabaseClient,
     private val unitsOfMeasureDao: UnitsOfMeasureDao,
     private val dispatcher: CoroutineDispatcher
-): UnitsOfMeasureRepo {
-    override suspend fun getUnitOfMeasure(code: String): Result<UnitsOfMeasure> =
+) : UnitOfMeasureRepo {
+    override suspend fun getUnitOfMeasureByCode(code: String): Result<UnitOfMeasure> =
         withContext(dispatcher) {
             runCatching {
-                unitsOfMeasureDao.getByCode(code).toDomain()
+                unitsOfMeasureDao.getByCode(code)?.toDomain() ?: throw Exception("Unit of measure not found")
+            }
+        }
+
+    override suspend fun getUnitOfMeasuresById(id: String): Result<UnitOfMeasure> =
+        withContext(dispatcher) {
+            runCatching {
+                unitsOfMeasureDao.getById(id)?.toDomain() ?: throw Exception("Unit of measure not found")
             }
         }
 
@@ -61,7 +68,7 @@ class UnitsOfMeasureRepoImpl(
 
     override suspend fun getAllUnitsOfMeasure(
         query: String
-    ): Result<List<UnitsOfMeasure>> = runCatching {
+    ): Result<List<UnitOfMeasure>> = runCatching {
         unitsOfMeasureDao.getAll(query).map { it.toDomain() }
     }
 

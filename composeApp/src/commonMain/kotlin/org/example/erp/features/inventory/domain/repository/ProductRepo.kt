@@ -16,8 +16,8 @@ interface ProductRepo {
         description: String,
         unitPrice: Double,
         costPrice: Double,
-        categoryId: String,
-        unitOfMeasureId: String
+        categoryId: String?,
+        unitOfMeasureId: String?
     ): Result<Unit>
 
     suspend fun updateProduct(
@@ -28,8 +28,8 @@ interface ProductRepo {
         description: String,
         unitPrice: Double,
         costPrice: Double,
-        categoryId: String,
-        unitOfMeasureId: String
+        categoryId: String?,
+        unitOfMeasureId: String?
     ): Result<Unit>
 
     suspend fun deleteProduct(code: String): Result<Unit>

@@ -28,7 +28,7 @@ class WarehouseRepoImpl(
 ): WarehouseRepo {
     override suspend fun getWarehouse(code: String): Result<Warehouses> = withContext(dispatcher) {
         runCatching {
-            warehouseDao.getByCode(code).toDomain()
+            warehouseDao.getByCode(code)?.toDomain() ?: throw Exception("Warehouse not found")
         }
     }
 

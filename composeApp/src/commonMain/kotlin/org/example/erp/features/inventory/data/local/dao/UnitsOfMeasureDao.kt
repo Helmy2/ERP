@@ -19,5 +19,9 @@ interface UnitsOfMeasureDao {
     suspend fun getAll(query: String): List<UnitsOfMeasureResponse>
 
     @Query("SELECT * FROM UnitsOfMeasureResponse WHERE code = :code")
-    suspend fun getByCode(code: String): UnitsOfMeasureResponse
+    suspend fun getByCode(code: String): UnitsOfMeasureResponse?
+
+    @Query("SELECT * FROM UnitsOfMeasureResponse WHERE id = :id")
+    suspend fun getById(id: String): UnitsOfMeasureResponse?
+
 }

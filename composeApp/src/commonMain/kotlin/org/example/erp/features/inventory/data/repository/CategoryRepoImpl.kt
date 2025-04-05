@@ -27,12 +27,28 @@ class CategoryRepoImpl(
     private val dispatcher: CoroutineDispatcher
 ) : CategoryRepo {
 
-    override suspend fun getCategory(code: String): Result<Category> = runCatching {
-        val response = categoryDao.getByCode(code)
+    override suspend fun getCategoryByCode(code: String): Result<Category> = runCatching {
+        val response = categoryDao.getByCode(code) ?: throw Exception("Category not found")
+        val parentCategory =
+            if (response.parentCategoryId == null) null else categoryDao.getById(response.parentCategoryId)
+                ?.toDomain(emptyList(), null)
+
         response.toDomain(
             children = categoryDao.getChildren(response.id).map { it.toDomain(emptyList(), null) },
-            parentCategory = if (response.parentCategoryId == null) null
-            else categoryDao.getById(response.parentCategoryId).toDomain(emptyList(), null),
+            parentCategory = parentCategory,
+        )
+    }
+
+    override suspend fun getCategoryById(id: String): Result<Category> = runCatching {
+        val response = categoryDao.getById(id) ?: throw Exception("Category not found")
+        val parentCategory =
+            if (response.parentCategoryId == null) null else categoryDao.getById(response.parentCategoryId)
+                ?.toDomain(emptyList(), null)
+
+
+        response.toDomain(
+            children = categoryDao.getChildren(response.id).map { it.toDomain(emptyList(), null) },
+            parentCategory = parentCategory,
         )
     }
 
