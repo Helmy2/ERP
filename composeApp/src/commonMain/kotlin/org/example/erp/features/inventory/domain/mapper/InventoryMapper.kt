@@ -2,22 +2,22 @@ package org.example.erp.features.inventory.domain.mapper
 
 import kotlinx.datetime.Clock
 import org.example.erp.features.inventory.data.model.AuditLogsResponse
+import org.example.erp.features.inventory.data.model.CategoryResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionDetailsResponse
 import org.example.erp.features.inventory.data.model.InventoryTransactionsResponse
 import org.example.erp.features.inventory.data.model.PermissionsResponse
-import org.example.erp.features.inventory.data.model.CategoryResponse
-import org.example.erp.features.inventory.data.model.ProductsResponse
+import org.example.erp.features.inventory.data.model.ProductResponse
 import org.example.erp.features.inventory.data.model.RolePermissionsResponse
 import org.example.erp.features.inventory.data.model.StockLevelsResponse
 import org.example.erp.features.inventory.data.model.UnitsOfMeasureResponse
 import org.example.erp.features.inventory.data.model.UserRolesResponse
 import org.example.erp.features.inventory.data.model.WarehouseResponse
 import org.example.erp.features.inventory.domain.entity.AuditLogs
+import org.example.erp.features.inventory.domain.entity.Category
 import org.example.erp.features.inventory.domain.entity.InventoryTransactionDetails
 import org.example.erp.features.inventory.domain.entity.InventoryTransactions
 import org.example.erp.features.inventory.domain.entity.Permissions
-import org.example.erp.features.inventory.domain.entity.Category
-import org.example.erp.features.inventory.domain.entity.Products
+import org.example.erp.features.inventory.domain.entity.Product
 import org.example.erp.features.inventory.domain.entity.RolePermissions
 import org.example.erp.features.inventory.domain.entity.StockLevels
 import org.example.erp.features.inventory.domain.entity.UnitsOfMeasure
@@ -51,20 +51,19 @@ fun CategoryResponse.toDomain(children: List<Category>, parentCategory: Category
         updatedBy = updatedBy
     )
 
-fun ProductsResponse.toDomain(): Products = Products(
-    id = id!!,
+fun ProductResponse.toDomain(
+    category: Category,
+    unitOfMeasure: UnitsOfMeasure
+): Product = Product(
+    id = id,
     code = code, name = name,
     sku = sku.orEmpty(),
     description = description.orEmpty(),
-    categoryId = categoryId.orEmpty(),
-    unitPrice = unitPrice,
+    category = category,
+    unitPrice = unitPrice ?: 0.0,
     costPrice = costPrice ?: 0.0,
-    minStockLevel = minStockLevel ?: 0,
-    maxStockLevel = maxStockLevel,
-    expiryDate = expiryDate,
-    isActive = isActive ?: true,
     deletedAt = deletedAt,
-    unitOfMeasureId = unitOfMeasureId,
+    unitOfMeasure = unitOfMeasure,
     createdAt = createdAt!!,
     updatedAt = updatedAt,
     createdBy = createdBy!!,

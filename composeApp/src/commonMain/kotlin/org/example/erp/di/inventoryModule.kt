@@ -3,9 +3,11 @@ package org.example.erp.di
 import kotlinx.coroutines.Dispatchers
 import org.example.erp.core.data.core.AppDatabase
 import org.example.erp.features.inventory.data.repository.CategoryRepoImpl
+import org.example.erp.features.inventory.data.repository.ProductRepoImpl
 import org.example.erp.features.inventory.data.repository.UnitsOfMeasureRepoImpl
 import org.example.erp.features.inventory.data.repository.WarehouseRepoImpl
 import org.example.erp.features.inventory.domain.repository.CategoryRepo
+import org.example.erp.features.inventory.domain.repository.ProductRepo
 import org.example.erp.features.inventory.domain.repository.UnitsOfMeasureRepo
 import org.example.erp.features.inventory.domain.repository.WarehouseRepo
 import org.example.erp.features.inventory.domain.useCase.category.CreateCategoryUseCase
@@ -14,6 +16,12 @@ import org.example.erp.features.inventory.domain.useCase.category.GetAllCategory
 import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.category.SyncCategoriesUseCase
 import org.example.erp.features.inventory.domain.useCase.category.UpdateCategoryUseCase
+import org.example.erp.features.inventory.domain.useCase.product.CreateProductUseCase
+import org.example.erp.features.inventory.domain.useCase.product.DeleteProductUseCase
+import org.example.erp.features.inventory.domain.useCase.product.GetAllProductUseCase
+import org.example.erp.features.inventory.domain.useCase.product.GetProductUseCase
+import org.example.erp.features.inventory.domain.useCase.product.SyncProductsUseCase
+import org.example.erp.features.inventory.domain.useCase.product.UpdateProductUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.CreateUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.DeleteUnitOfMeasureUseCase
 import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetAllUnitsOfMeasureUseCase
@@ -77,4 +85,16 @@ val inventoryModule = module {
     factory { GetAllCategoryUseCase(get()) }
     factory { UpdateCategoryUseCase(get()) }
     factory { DeleteCategoryUseCase(get()) }
+
+    single<ProductRepo> {
+        ProductRepoImpl(get(), get(), get(), get(), Dispatchers.IO)
+    }
+    factory { SyncProductsUseCase(get()) }
+    factory { CreateProductUseCase(get()) }
+    factory { GetAllProductUseCase(get()) }
+    factory { GetProductUseCase(get()) }
+    factory { UpdateProductUseCase(get()) }
+    factory { DeleteProductUseCase(get()) }
+
+
 }
