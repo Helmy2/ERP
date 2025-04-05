@@ -23,6 +23,7 @@ ksp = "2.1.20-1.0.31"
 datastore = "1.1.4"
 androidx-room = "2.7.0-rc03"
 sqlite = "2.5.0-SNAPSHOT"
+napier = "2.7.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
@@ -68,6 +69,7 @@ datastore-preferences = { module = "androidx.datastore:datastore-preferences", v
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

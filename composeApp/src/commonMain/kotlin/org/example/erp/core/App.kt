@@ -19,6 +19,8 @@ import androidx.navigation.compose.rememberNavController
 import erp.composeapp.generated.resources.Res
 import erp.composeapp.generated.resources.back_online
 import erp.composeapp.generated.resources.no_internet
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.domain.navigation.Navigator
 import org.example.erp.core.domain.navigation.TopLevelRoutes
@@ -27,7 +29,6 @@ import org.example.erp.core.presentation.navigation.AppNavHost
 import org.example.erp.core.presentation.navigation.mainNavigationItems
 import org.example.erp.core.util.Connectivity
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -35,6 +36,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 @Preview
 fun App(startDestination: Destination = Destination.Main) {
+    Napier.base(DebugAntilog())
 
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
