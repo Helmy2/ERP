@@ -17,12 +17,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.example.erp.core.domain.snackbar.SnackbarManager
+import org.example.erp.features.inventory.domain.useCase.category.GetAllCategoryUseCase
+import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByIdUseCase
 import org.example.erp.features.inventory.domain.useCase.product.CreateProductUseCase
 import org.example.erp.features.inventory.domain.useCase.product.DeleteProductUseCase
 import org.example.erp.features.inventory.domain.useCase.product.GetAllProductUseCase
 import org.example.erp.features.inventory.domain.useCase.product.GetProductByCodeUseCase
 import org.example.erp.features.inventory.domain.useCase.product.SyncProductsUseCase
 import org.example.erp.features.inventory.domain.useCase.product.UpdateProductUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetAllUnitsOfMeasureUseCase
+import org.example.erp.features.inventory.domain.useCase.unitOfMeasures.GetUnitOfMeasuresByIdUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
 import org.jetbrains.compose.resources.getString
 
@@ -35,20 +39,57 @@ class ProductViewModel(
     private val deleteProduct: DeleteProductUseCase,
     private val getAllProduct: GetAllProductUseCase,
     private val syncProducts: SyncProductsUseCase,
+    private val getCategoryById: GetCategoryByIdUseCase,
+    private val getUnitOfMeasureById: GetUnitOfMeasuresByIdUseCase,
+    private val getAllCategory: GetAllCategoryUseCase,
+    private val getAllUnitsOfMeasure: GetAllUnitsOfMeasureUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductState(getUserById = { getDisplayName(it) }))
     val state = _state.onStart {
-            syncProducts().onFailure {
-                snackbarManager.showErrorSnackbar(
-                    getString(Res.string.error_syncing_categories), it
+        lead()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000L),
+        initialValue = ProductState(getUserById = { getDisplayName(it) })
+    )
+
+    private suspend fun lead() {
+        viewModelScope.launch {
+            launch {
+                syncProducts().onFailure {
+                    snackbarManager.showErrorSnackbar(
+                        getString(Res.string.error_syncing_categories), it
+                    )
+                }
+            }
+            launch {
+                search("")
+            }
+            launch {
+                getAllCategory("").fold(
+                    onSuccess = { categories -> _state.update { it.copy(categoryList = categories) } },
+                    onFailure = {
+                        snackbarManager.showErrorSnackbar(
+                            getString(Res.string.error_syncing_categories), it
+                        )
+                    }
                 )
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ProductState(getUserById = { getDisplayName(it) })
-        )
+            launch {
+                getAllUnitsOfMeasure("").fold(
+                    onSuccess = { unitsOfMeasure ->
+                        _state.update { it.copy(unitOfMeasureList = unitsOfMeasure) }
+                    },
+                    onFailure = {
+                        snackbarManager.showErrorSnackbar(
+                            getString(Res.string.error_syncing_categories), it
+                        )
+                    }
+                )
+            }
+        }
+    }
 
     fun handleEvent(event: ProductEvent) {
         when (event) {
@@ -72,17 +113,42 @@ class ProductViewModel(
         }
     }
 
-    private fun searchProduct(query: String) {
+    private fun searchProduct(code: String) {
         viewModelScope.launch {
-            getProduct(query).fold(onSuccess = { product ->
+            _state.update { it.copy(code = code, loading = true) }
+
+            getProduct(code).fold(onFailure = {
                 _state.update {
                     it.copy(
-                        selectedProduct = product, loading = false
+                        name = "",
+                        selectedProduct = null,
+                        loading = false,
+                        isUnitOfMeasureDialogOpen = false,
+                        isCategoryDialogOpen = false,
+                        unitOfMeasureCode = "",
+                        categoryCode = "",
+                        costPrice = null,
+                        unitPrice = null,
+                        sku = "",
+                        description = "",
                     )
                 }
-            }, onFailure = { throwable ->
-                _state.update { it.copy(loading = false) }
-                println("Exception in searchProduct: $throwable")
+            }, onSuccess = { product ->
+                _state.update {
+                    it.copy(
+                        loading = false,
+                        name = product.name,
+                        selectedProduct = product,
+                        sku = product.sku,
+                        description = product.description,
+                        unitPrice = product.unitPrice,
+                        costPrice = product.costPrice,
+                        unitOfMeasureCode = getUnitOfMeasureById(product.unitOfMeasureId ?: "").getOrNull()?.code ?: "",
+                        categoryCode = getCategoryById(product.categoryId ?: "").getOrNull()?.code ?: "",
+                        isUnitOfMeasureDialogOpen = false,
+                        isCategoryDialogOpen = false,
+                    )
+                }
             })
         }
     }
@@ -158,11 +224,11 @@ class ProductViewModel(
                 code = state.value.code,
                 name = state.value.name,
                 description = state.value.description,
-                unitPrice = state.value.unitPrice,
-                costPrice = state.value.costPrice,
+                unitPrice = state.value.unitPrice ?: 0.0,
+                costPrice = state.value.costPrice ?: 0.0,
                 sku = state.value.sku,
-                unitOfMeasureId = state.value.selectedProduct!!.unitOfMeasure?.id,
-                categoryId = state.value.selectedProduct!!.category?.id
+                unitOfMeasureId = state.value.unitOfMeasureList.firstOrNull { it.code == state.value.unitOfMeasureCode }?.id,
+                categoryId = state.value.categoryList.firstOrNull { it.code == state.value.categoryCode }?.id
             ).onSuccess {
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.product_created))
@@ -184,11 +250,11 @@ class ProductViewModel(
                 code = state.value.code,
                 name = state.value.name,
                 description = state.value.description,
-                unitPrice = state.value.unitPrice,
-                costPrice = state.value.costPrice,
+                unitPrice = state.value.unitPrice ?: 0.0,
+                costPrice = state.value.costPrice ?: 0.0,
                 sku = state.value.sku,
-                unitOfMeasureId = state.value.selectedProduct!!.unitOfMeasure?.id,
-                categoryId = state.value.selectedProduct!!.category?.id
+                unitOfMeasureId = state.value.unitOfMeasureList.firstOrNull { it.code == state.value.unitOfMeasureCode }?.id,
+                categoryId = state.value.categoryList.firstOrNull { it.code == state.value.categoryCode }?.id
             ).onSuccess {
                 snackbarManager.showSnackbar(getString(Res.string.product_updated))
             }.onFailure {

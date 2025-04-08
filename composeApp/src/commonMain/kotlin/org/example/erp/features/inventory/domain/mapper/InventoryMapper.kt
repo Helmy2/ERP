@@ -51,19 +51,16 @@ fun CategoryResponse.toDomain(children: List<Category>, parentCategory: Category
         updatedBy = updatedBy
     )
 
-fun ProductResponse.toDomain(
-    category: Category?,
-    unitOfMeasure: UnitOfMeasure?
-): Product = Product(
+fun ProductResponse.toDomain(): Product = Product(
     id = id,
     code = code, name = name,
     sku = sku.orEmpty(),
     description = description.orEmpty(),
-    category = category,
+    categoryId = categoryId,
     unitPrice = unitPrice ?: 0.0,
     costPrice = costPrice ?: 0.0,
     deletedAt = deletedAt,
-    unitOfMeasure = unitOfMeasure,
+    unitOfMeasureId = unitOfMeasureId,
     createdAt = createdAt!!,
     updatedAt = updatedAt,
     createdBy = createdBy!!,

@@ -59,7 +59,7 @@ val inventoryModule = module {
     viewModel { UnitOfMeasuresViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { WarehouseViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel { CategoryViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { ProductViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { ProductViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(),  get(), get(),get()) }
 
 
     single<UnitOfMeasureRepo> {

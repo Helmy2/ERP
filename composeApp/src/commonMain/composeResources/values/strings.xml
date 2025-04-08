@@ -95,5 +95,10 @@
     <string name="product_deleted">Product deleted successfully</string>
     <string name="error_deleting_product">Error deleting product</string>
     <string name="products">Products</string>
+    <string name="category">Category</string>
+    <string name="unit_price">Unit Price</string>
+    <string name="cost_price">Cost Price</string>
+    <string name="sku">SKU</string>
+
 
 </resources>

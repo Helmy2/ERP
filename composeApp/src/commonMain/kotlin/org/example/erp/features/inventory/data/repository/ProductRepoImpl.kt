@@ -1,5 +1,6 @@
 package org.example.erp.features.inventory.data.repository
 
+import io.github.aakira.napier.Napier
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
@@ -57,29 +58,12 @@ class ProductRepoImpl(
     }
 
     override suspend fun getProduct(code: String): Result<Product> = runCatching {
-        val response = productDao.getByCode(code)
-        response.toDomain(
-            category = getCategoryByIdUseCase(
-                response.categoryId ?: throw Exception("Category not found")
-            ).getOrNull(),
-            unitOfMeasure = getUnitsOfMeasureByIdUseCase(
-                response.unitOfMeasureId ?: throw Exception("Unit of measure not found")
-            ).getOrNull()
-        )
+        productDao.getByCode(code).toDomain()
     }
 
     override suspend fun getAllProduct(query: String): Result<List<Product>> {
         return runCatching {
-            productDao.getAll(query).map { response ->
-                response.toDomain(
-                    category = getCategoryByIdUseCase(
-                        response.categoryId ?: throw Exception("Category not found")
-                    ).getOrNull(),
-                    unitOfMeasure = getUnitsOfMeasureByIdUseCase(
-                        response.unitOfMeasureId ?: throw Exception("Unit of measure not found")
-                    ).getOrNull()
-                )
-            }
+            productDao.getAll(query).map { it.toDomain() }
         }
     }
 
