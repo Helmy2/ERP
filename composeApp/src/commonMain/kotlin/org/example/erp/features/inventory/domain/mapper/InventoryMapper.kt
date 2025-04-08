@@ -38,13 +38,13 @@ fun UnitsOfMeasureResponse.toDomain(): UnitOfMeasure = UnitOfMeasure(
     updatedBy = updatedBy
 )
 
-fun CategoryResponse.toDomain(children: List<Category>, parentCategory: Category?): Category =
+fun CategoryResponse.toDomain(childrenIds: List<String>, parentCategoryId: String?): Category =
     Category(
         id = id,
         code = code,
         name = name,
-        children = children,
-        parentCategory = parentCategory,
+        childrenIds = childrenIds,
+        parentCategoryId = parentCategoryId,
         createdAt = createdAt!!,
         updatedAt = updatedAt,
         createdBy = createdBy!!,

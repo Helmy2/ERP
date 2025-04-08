@@ -54,7 +54,7 @@ class ProductViewModel(
         initialValue = ProductState(getUserById = { getDisplayName(it) })
     )
 
-    private suspend fun lead() {
+    private fun lead() {
         viewModelScope.launch {
             launch {
                 syncProducts().onFailure {
@@ -143,8 +143,11 @@ class ProductViewModel(
                         description = product.description,
                         unitPrice = product.unitPrice,
                         costPrice = product.costPrice,
-                        unitOfMeasureCode = getUnitOfMeasureById(product.unitOfMeasureId ?: "").getOrNull()?.code ?: "",
-                        categoryCode = getCategoryById(product.categoryId ?: "").getOrNull()?.code ?: "",
+                        unitOfMeasureCode = getUnitOfMeasureById(
+                            product.unitOfMeasureId ?: ""
+                        ).getOrNull()?.code ?: "",
+                        categoryCode = getCategoryById(product.categoryId ?: "").getOrNull()?.code
+                            ?: "",
                         isUnitOfMeasureDialogOpen = false,
                         isCategoryDialogOpen = false,
                     )
@@ -289,8 +292,8 @@ class ProductViewModel(
                 code = "",
                 name = "",
                 description = "",
-                unitPrice = 0.0,
-                costPrice = 0.0,
+                unitPrice = null,
+                costPrice = null,
                 sku = "",
                 unitOfMeasureCode = "",
                 categoryCode = ""

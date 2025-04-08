@@ -21,6 +21,7 @@ import org.example.erp.features.inventory.domain.useCase.category.CreateCategory
 import org.example.erp.features.inventory.domain.useCase.category.DeleteCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.GetAllCategoryUseCase
 import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByCodeUseCase
+import org.example.erp.features.inventory.domain.useCase.category.GetCategoryByIdUseCase
 import org.example.erp.features.inventory.domain.useCase.category.SyncCategoriesUseCase
 import org.example.erp.features.inventory.domain.useCase.category.UpdateCategoryUseCase
 import org.example.erp.features.user.domain.usecase.GetDisplayNameUseCase
@@ -35,6 +36,7 @@ class CategoryViewModel(
     private val createCategory: CreateCategoryUseCase,
     private val updateCategory: UpdateCategoryUseCase,
     private val deleteCategory: DeleteCategoryUseCase,
+    private val getCategoryById: GetCategoryByIdUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -58,8 +60,7 @@ class CategoryViewModel(
             getAllCategory(query).fold(onSuccess = { list ->
                 _state.update {
                     it.copy(
-                        categories = list.sortedBy { category -> category.code },
-                        loading = false
+                        categories = list.sortedBy { category -> category.code }, loading = false
                     )
                 }
             }, onFailure = { throwable ->
@@ -137,7 +138,9 @@ class CategoryViewModel(
             createCategory(
                 name = state.value.name,
                 code = state.value.code,
-                parentCategoryId = state.value.parentCategory?.id
+                parentCategoryId = state.value.categories.firstOrNull {
+                    it.code == state.value.parentCategoryCode
+                }?.id
             ).fold(onSuccess = {
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.category_created))
@@ -170,7 +173,6 @@ class CategoryViewModel(
                 _state.update {
                     it.copy(
                         name = "",
-                        parentCategory = null,
                         selectedCategory = null,
                         loading = false,
                         isParentCategoryOpen = false,
@@ -181,9 +183,8 @@ class CategoryViewModel(
                 _state.update {
                     it.copy(
                         name = category.name,
-                        parentCategory = category.parentCategory,
                         selectedCategory = category,
-                        parentCategoryCode = category.parentCategory?.code ?: "",
+                        parentCategoryCode = getCategoryById(category.parentCategoryId ?: "").getOrNull()?.code,
                         loading = false
                     )
                 }
@@ -198,7 +199,6 @@ class CategoryViewModel(
                 selectedCategory = null,
                 code = "",
                 name = "",
-                parentCategory = null,
                 parentCategoryCode = "",
                 isParentCategoryOpen = false
             )

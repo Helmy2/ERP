@@ -112,7 +112,7 @@ fun ProductScreen(
                         value = if (state.costPrice == null) "" else state.costPrice.toString(),
                         onValueChange = {
                             it.toDoubleOrNull()?.let { price ->
-                                onEvent(ProductEvent.UpdateUnitPrice(price))
+                                onEvent(ProductEvent.UpdateCostPrice(price))
                             }
                         },
                         label = stringResource(Res.string.cost_price),

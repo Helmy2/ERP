@@ -10,7 +10,6 @@ data class CategoryState(
     val code: String = "",
     val name: String = "",
     val parentCategoryCode: String? = null,
-    val parentCategory: Category? = null,
     val isParentCategoryOpen: Boolean = false,
     val query: String = "",
     val isQueryActive: Boolean = false,
@@ -27,7 +26,7 @@ fun getAllDescendantCodesIncludingSelfRecursive(
     val codes = mutableSetOf<String>()
     if (selectedCategory != null) {
         codes.add(selectedCategory.code)
-        val children = categories.filter { it.parentCategory?.id == selectedCategory.id }
+        val children = categories.filter { it.parentCategoryId == selectedCategory.id }
         codes.addAll(children.map { it.code })
         children.forEach { child ->
             codes.addAll(getAllDescendantCodesIncludingSelfRecursive(child, categories))

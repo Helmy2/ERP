@@ -30,12 +30,11 @@ class CategoryRepoImpl(
     override suspend fun getCategoryByCode(code: String): Result<Category> = runCatching {
         val response = categoryDao.getByCode(code) ?: throw Exception("Category not found")
         val parentCategory =
-            if (response.parentCategoryId == null) null else categoryDao.getById(response.parentCategoryId)
-                ?.toDomain(emptyList(), null)
+            if (response.parentCategoryId == null) null else categoryDao.getById(response.parentCategoryId)?.id
 
         response.toDomain(
-            children = categoryDao.getChildren(response.id).map { it.toDomain(emptyList(), null) },
-            parentCategory = parentCategory,
+            childrenIds = categoryDao.getChildren(response.id).map { it.id },
+            parentCategoryId = parentCategory,
         )
     }
 
@@ -43,12 +42,12 @@ class CategoryRepoImpl(
         val response = categoryDao.getById(id) ?: throw Exception("Category not found")
         val parentCategory =
             if (response.parentCategoryId == null) null else categoryDao.getById(response.parentCategoryId)
-                ?.toDomain(emptyList(), null)
+                ?.id
 
 
         response.toDomain(
-            children = categoryDao.getChildren(response.id).map { it.toDomain(emptyList(), null) },
-            parentCategory = parentCategory,
+            childrenIds = categoryDao.getChildren(response.id).map { it.id },
+            parentCategoryId = parentCategory,
         )
     }
 
