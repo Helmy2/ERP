@@ -99,6 +99,8 @@
     <string name="unit_price">Unit Price</string>
     <string name="cost_price">Cost Price</string>
     <string name="sku">SKU</string>
+    <string name="wrong_unit_price">Wrong unit price</string>
+    <string name="wrong_cost_price">Wrong cost price</string>
 
 
 </resources>

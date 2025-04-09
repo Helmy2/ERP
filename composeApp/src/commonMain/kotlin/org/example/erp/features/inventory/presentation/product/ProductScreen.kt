@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import erp.composeapp.generated.resources.Res
@@ -98,27 +99,30 @@ fun ProductScreen(
                 }
                 FlowRow {
                     LabeledTextField(
-                        value = if (state.unitPrice == null) "" else state.unitPrice.toString(),
+                        value = state.unitPrice,
                         onValueChange = {
-                            it.toDoubleOrNull()?.let { price ->
-                                onEvent(ProductEvent.UpdateUnitPrice(price))
-                            }
+                            if (it.toDoubleOrNull() != null)
+                                onEvent(ProductEvent.UpdateUnitPrice(it))
                         },
                         label = stringResource(Res.string.unit_price),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Number
+                        )
                     )
                     Spacer(modifier = Modifier.size(8.dp))
                     LabeledTextField(
-                        value = if (state.costPrice == null) "" else state.costPrice.toString(),
+                        value = state.costPrice,
                         onValueChange = {
-                            it.toDoubleOrNull()?.let { price ->
-                                onEvent(ProductEvent.UpdateCostPrice(price))
-                            }
+                            if (it.toDoubleOrNull() != null)
+                                onEvent(ProductEvent.UpdateCostPrice(it))
                         },
                         label = stringResource(Res.string.cost_price),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Next,
+                            keyboardType = KeyboardType.Number
+                        )
                     )
-
                 }
                 FlowRow {
                     LabeledTextField(
@@ -190,5 +194,6 @@ fun ProductScreen(
                     )
                 }
             }
-        })
+        },
+    )
 }

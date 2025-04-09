@@ -10,8 +10,8 @@ sealed interface ProductEvent {
     data class UpdateName(val name: String) : ProductEvent
     data class UpdateSku(val sku: String) : ProductEvent
     data class UpdateDescription(val description: String) : ProductEvent
-    data class UpdateUnitPrice(val unitPrice: Double) : ProductEvent
-    data class UpdateCostPrice(val costPrice: Double) : ProductEvent
+    data class UpdateUnitPrice(val unitPrice: String) : ProductEvent
+    data class UpdateCostPrice(val costPrice: String) : ProductEvent
     data class UpdateUnitOfMeasureCode(val code: String) : ProductEvent
     data class UpdateCategoryCode(val code: String) : ProductEvent
     data class UpdateIsUnitOfMeasureDialogOpen(val open: Boolean) : ProductEvent

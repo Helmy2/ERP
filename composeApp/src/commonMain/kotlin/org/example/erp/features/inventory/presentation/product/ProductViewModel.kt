@@ -10,6 +10,8 @@ import erp.composeapp.generated.resources.error_updating_product
 import erp.composeapp.generated.resources.product_created
 import erp.composeapp.generated.resources.product_deleted
 import erp.composeapp.generated.resources.product_updated
+import erp.composeapp.generated.resources.wrong_cost_price
+import erp.composeapp.generated.resources.wrong_unit_price
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
@@ -127,8 +129,8 @@ class ProductViewModel(
                         isCategoryDialogOpen = false,
                         unitOfMeasureCode = "",
                         categoryCode = "",
-                        costPrice = null,
-                        unitPrice = null,
+                        costPrice = "",
+                        unitPrice = "",
                         sku = "",
                         description = "",
                     )
@@ -141,8 +143,8 @@ class ProductViewModel(
                         selectedProduct = product,
                         sku = product.sku,
                         description = product.description,
-                        unitPrice = product.unitPrice,
-                        costPrice = product.costPrice,
+                        unitPrice = product.unitPrice.toString(),
+                        costPrice = product.costPrice.toString(),
                         unitOfMeasureCode = getUnitOfMeasureById(
                             product.unitOfMeasureId ?: ""
                         ).getOrNull()?.code ?: "",
@@ -200,11 +202,11 @@ class ProductViewModel(
         _state.update { it.copy(description = description) }
     }
 
-    private fun updateUnitPrice(unitPrice: Double) {
+    private fun updateUnitPrice(unitPrice: String) {
         _state.update { it.copy(unitPrice = unitPrice) }
     }
 
-    private fun updateCostPrice(costPrice: Double) {
+    private fun updateCostPrice(costPrice: String) {
         _state.update { it.copy(costPrice = costPrice) }
     }
 
@@ -222,13 +224,15 @@ class ProductViewModel(
 
     private fun createProduct() {
         viewModelScope.launch {
+            val unitPrice = getUnitPrice() ?: return@launch
+            val costPrice = getCostPrice() ?: return@launch
             _state.update { it.copy(loading = true) }
             createProduct(
                 code = state.value.code,
                 name = state.value.name,
                 description = state.value.description,
-                unitPrice = state.value.unitPrice ?: 0.0,
-                costPrice = state.value.costPrice ?: 0.0,
+                unitPrice = unitPrice,
+                costPrice = costPrice,
                 sku = state.value.sku,
                 unitOfMeasureId = state.value.unitOfMeasureList.firstOrNull { it.code == state.value.unitOfMeasureCode }?.id,
                 categoryId = state.value.categoryList.firstOrNull { it.code == state.value.categoryCode }?.id
@@ -247,14 +251,16 @@ class ProductViewModel(
 
     private fun updateProduct() {
         viewModelScope.launch {
+            val unitPrice = getUnitPrice() ?: return@launch
+            val costPrice = getCostPrice() ?: return@launch
             _state.update { it.copy(loading = true) }
             updateProduct(
                 id = state.value.selectedProduct!!.id,
                 code = state.value.code,
                 name = state.value.name,
                 description = state.value.description,
-                unitPrice = state.value.unitPrice ?: 0.0,
-                costPrice = state.value.costPrice ?: 0.0,
+                unitPrice = unitPrice,
+                costPrice = costPrice,
                 sku = state.value.sku,
                 unitOfMeasureId = state.value.unitOfMeasureList.firstOrNull { it.code == state.value.unitOfMeasureCode }?.id,
                 categoryId = state.value.categoryList.firstOrNull { it.code == state.value.categoryCode }?.id
@@ -286,14 +292,28 @@ class ProductViewModel(
         }
     }
 
+    private suspend fun getUnitPrice(): Double? {
+        if (state.value.unitPrice.isEmpty()) return 0.0
+        val unitPrice = state.value.unitPrice.toDoubleOrNull()
+        if (unitPrice == null) snackbarManager.showSnackbar(getString(Res.string.wrong_unit_price))
+        return unitPrice
+    }
+
+    private suspend fun getCostPrice(): Double? {
+        if (state.value.costPrice.isEmpty()) return 0.0
+        val costPrice = state.value.costPrice.toDoubleOrNull()
+        if (costPrice == null) snackbarManager.showSnackbar(getString(Res.string.wrong_cost_price))
+        return costPrice
+    }
+
     private fun clearState() {
         _state.update {
             it.copy(
                 code = "",
                 name = "",
                 description = "",
-                unitPrice = null,
-                costPrice = null,
+                unitPrice = "",
+                costPrice = "",
                 sku = "",
                 unitOfMeasureCode = "",
                 categoryCode = ""
