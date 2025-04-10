@@ -20,4 +20,8 @@ interface ProductDao {
 
     @Query("SELECT * FROM ProductResponse WHERE code = :code")
     suspend fun getByCode(code: String): ProductResponse
+
+    @Query("SELECT * FROM ProductResponse WHERE id = :id")
+    suspend fun getById(id: String): ProductResponse
+
 }

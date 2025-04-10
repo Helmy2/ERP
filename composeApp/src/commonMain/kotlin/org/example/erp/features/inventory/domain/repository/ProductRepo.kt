@@ -5,7 +5,9 @@ import org.example.erp.features.inventory.domain.entity.Product
 interface ProductRepo {
     fun syncProduct(): Result<Unit>
 
-    suspend fun getProduct(code: String): Result<Product>
+    suspend fun getProductByCode(code: String): Result<Product>
+
+    suspend fun getProductById(id: String): Result<Product>
 
     suspend fun getAllProduct(query: String): Result<List<Product>>
 
