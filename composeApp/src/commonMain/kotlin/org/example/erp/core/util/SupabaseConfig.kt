@@ -21,5 +21,12 @@ object SupabaseConfig {
     const val UPDATED_BY_ROW = "updated_by"
     const val CREATED_AT_ROW = "created_at"
     const val UPDATED_AT_ROW = "updated_at"
+    const val WAREHOUSE_ID_ROW = "warehouse_id"
+    const val TRANSACTION_TYPE_ROW = "transaction_type"
+    const val TRANSACTION_DATE_ROW = "transaction_date"
+    const val NOTES_ROW = "notes"
+    const val TRANSACTION_ID_ROW = "transaction_id"
+    const val PRODUCT_ID_ROW = "product_id"
+    const val QUANTITY_ROW = "quantity"
 
 }

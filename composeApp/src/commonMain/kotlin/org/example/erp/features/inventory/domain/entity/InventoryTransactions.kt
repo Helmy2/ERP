@@ -3,15 +3,15 @@ package org.example.erp.features.inventory.domain.entity
 import kotlinx.datetime.Instant
 
 data class InventoryTransactions(
-    val id: String,
-    val code: String,
+    override val id: String,
+    override val code: String,
     val warehouseId: String,
     val transactionType: TransactionType,
-    val transactionDate: Instant,
     val notes: String,
-    val createdAt: Instant,
     val listOfItem: List<InventoryTransactionDetails>,
-    val updatedAt: Instant? = null,
-    val createdBy: String,
-    val updatedBy: String? = null,
-)
+    val transactionDate: Instant,
+    override val createdAt: Instant,
+    override val updatedAt: Instant? = null,
+    override val createdBy: String,
+    override val updatedBy: String? = null
+) : Item

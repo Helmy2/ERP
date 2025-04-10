@@ -94,11 +94,12 @@ fun InventoryTransactionsResponse.toDomain(list: List<InventoryTransactionDetail
         listOfItem = list
     )
 
-fun InventoryTransactionDetailsResponse.toDomain(): InventoryTransactionDetails =
+fun InventoryTransactionDetailsResponse.toDomain(
+    product: Product,
+): InventoryTransactionDetails =
     InventoryTransactionDetails(
         id = id,
-        transactionId = transactionId,
-        productId = productId,
+        product = product,
         quantity = quantity
     )
 
