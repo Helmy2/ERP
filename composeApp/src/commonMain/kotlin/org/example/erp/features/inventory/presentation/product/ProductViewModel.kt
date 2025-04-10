@@ -307,6 +307,7 @@ class ProductViewModel(
     }
 
     private fun clearState() {
+        search("")
         _state.update {
             it.copy(
                 code = "",

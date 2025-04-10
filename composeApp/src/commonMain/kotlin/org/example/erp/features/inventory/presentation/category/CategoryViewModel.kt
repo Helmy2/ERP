@@ -154,7 +154,7 @@ class CategoryViewModel(
 
     private fun deleteCategory() {
         viewModelScope.launch {
-            deleteCategory(state.value.selectedCategory!!.id).fold(onSuccess = {
+            deleteCategory(state.value.code).fold(onSuccess = {
                 clearState()
                 snackbarManager.showSnackbar(getString(Res.string.category_deleted))
             }, onFailure = {
@@ -184,7 +184,9 @@ class CategoryViewModel(
                     it.copy(
                         name = category.name,
                         selectedCategory = category,
-                        parentCategoryCode = getCategoryById(category.parentCategoryId ?: "").getOrNull()?.code,
+                        parentCategoryCode = getCategoryById(
+                            category.parentCategoryId ?: ""
+                        ).getOrNull()?.code,
                         loading = false
                     )
                 }
@@ -193,6 +195,7 @@ class CategoryViewModel(
     }
 
     private fun clearState() {
+        search("")
         _state.update {
             it.copy(
                 loading = false,

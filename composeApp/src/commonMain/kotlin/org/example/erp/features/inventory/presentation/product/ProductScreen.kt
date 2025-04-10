@@ -101,7 +101,7 @@ fun ProductScreen(
                     LabeledTextField(
                         value = state.unitPrice,
                         onValueChange = {
-                            if (it.toDoubleOrNull() != null)
+                            if (it.toDoubleOrNull() != null || it.isBlank())
                                 onEvent(ProductEvent.UpdateUnitPrice(it))
                         },
                         label = stringResource(Res.string.unit_price),
@@ -114,7 +114,7 @@ fun ProductScreen(
                     LabeledTextField(
                         value = state.costPrice,
                         onValueChange = {
-                            if (it.toDoubleOrNull() != null)
+                            if (it.toDoubleOrNull() != null || it.isBlank())
                                 onEvent(ProductEvent.UpdateCostPrice(it))
                         },
                         label = stringResource(Res.string.cost_price),

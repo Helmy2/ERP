@@ -20,5 +20,5 @@ interface CategoryRepo {
         id: String, code: String, name: String, parentCategoryId: String?
     ): Result<Unit>
 
-    suspend fun deleteCategory(code: String): Result<Unit>
+    suspend fun deleteCategoryByCode(code: String): Result<Unit>
 }

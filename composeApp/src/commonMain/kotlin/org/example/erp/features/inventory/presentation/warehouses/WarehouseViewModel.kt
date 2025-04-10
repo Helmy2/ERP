@@ -198,6 +198,7 @@ class WarehouseViewModel(
     }
 
     private fun clearState() {
+        search("")
         _state.update {
             it.copy(
                 loading = false,

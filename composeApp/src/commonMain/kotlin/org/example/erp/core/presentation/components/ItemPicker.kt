@@ -14,12 +14,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import erp.composeapp.generated.resources.Res
@@ -44,6 +47,8 @@ fun <T> ItemPicker(
     matchesItemCode: (String?, T) -> Boolean,
     modifier: Modifier = Modifier
 ) {
+    val isRtl = LocalTextStyle.current.textDirection == TextDirection.Rtl
+
     Column(
         modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -63,10 +68,14 @@ fun <T> ItemPicker(
                         onClick = { onDialogVisibilityChanged(true) },
                     ) {
                         Icon(
-                            Icons.Default.Search, contentDescription = stringResource(Res.string.search)
+                            Icons.Default.Search,
+                            contentDescription = stringResource(Res.string.search)
                         )
                     }
-                }
+                },
+                textStyle = TextStyle(
+                    textDirection = if (isRtl && itemCode.orEmpty().any { it in '\u0600'..'\u06FF' }) TextDirection.Rtl else TextDirection.Ltr
+                )
             )
         }
 

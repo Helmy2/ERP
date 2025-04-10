@@ -112,7 +112,7 @@ class CategoryRepoImpl(
         }
     }
 
-    override suspend fun deleteCategory(code: String): Result<Unit> = withContext(dispatcher) {
+    override suspend fun deleteCategoryByCode(code: String): Result<Unit> = withContext(dispatcher) {
         runCatching {
             supabaseClient.from(CATEGORY).delete { filter { CategoryResponse::code eq code } }
             Unit
