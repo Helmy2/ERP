@@ -23,7 +23,6 @@ import org.example.erp.core.domain.navigation.Destination
 import org.example.erp.core.presentation.AppTheme
 import org.example.erp.di.initKoin
 import org.example.erp.features.user.domain.usecase.IsUserLongedInUseCase
-import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -35,37 +34,35 @@ fun main() {
             title = "ERP",
             state = rememberWindowState(width = 1000.dp, height = 600.dp)
         ) {
-            DevelopmentEntryPoint {
-                val isUserLongedInUseCase = koinInject<IsUserLongedInUseCase>()
+            val isUserLongedInUseCase = koinInject<IsUserLongedInUseCase>()
 
-                var entryDestination by remember { mutableStateOf<Result<Destination>?>(null) }
+            var entryDestination by remember { mutableStateOf<Result<Destination>?>(null) }
 
-                LaunchedEffect(Unit) {
-                    isUserLongedInUseCase().also {
-                        entryDestination =
-                            it.map { flag -> if (flag) Destination.Main else Destination.Auth }
-                    }
+            LaunchedEffect(Unit) {
+                isUserLongedInUseCase().also {
+                    entryDestination =
+                        it.map { flag -> if (flag) Destination.Main else Destination.Auth }
                 }
-                AppTheme {
-                    AnimatedContent(entryDestination != null) {
-                        if (it) {
-                            entryDestination!!.onSuccess { destination ->
-                                App(destination)
-                            }.onFailure {
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Text(stringResource(Res.string.something_went_wrong))
-                                }
-                            }
-                        } else {
+            }
+            AppTheme {
+                AnimatedContent(entryDestination != null) {
+                    if (it) {
+                        entryDestination!!.onSuccess { destination ->
+                            App(destination)
+                        }.onFailure {
                             Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                CircularProgressIndicator()
+                                Text(stringResource(Res.string.something_went_wrong))
                             }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
                 }

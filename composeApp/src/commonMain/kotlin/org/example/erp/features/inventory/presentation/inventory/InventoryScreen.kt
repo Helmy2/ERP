@@ -11,6 +11,7 @@ import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,7 @@ import erp.composeapp.generated.resources.categories
 import erp.composeapp.generated.resources.products
 import erp.composeapp.generated.resources.unit_of_measures
 import erp.composeapp.generated.resources.warehouses
+import kotlinx.coroutines.launch
 import org.example.erp.core.presentation.components.ItemGridRes
 import org.example.erp.features.inventory.domain.entity.InventoryDestination
 import org.example.erp.features.inventory.presentation.category.CategoryRoute
@@ -41,6 +43,7 @@ fun InventoryScreen(
     state: InventoryState,
     onEvent: (InventoryEvent) -> Unit,
 ) {
+    val scope = rememberCoroutineScope()
     val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<InventoryDestination>()
     ListDetailPaneScaffold(
         directive = scaffoldNavigator.scaffoldDirective,
@@ -51,7 +54,9 @@ fun InventoryScreen(
                     list = InventoryDestination.getAll(),
                     onItemClick = {
                         onEvent(InventoryEvent.UpdateSelectDestination(it))
-                        scaffoldNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
+                        scope.launch {
+                            scaffoldNavigator.navigateTo(ListDetailPaneScaffoldRole.Detail, it)
+                        }
                     },
                     labelProvider = {
                         when (it) {
@@ -68,11 +73,13 @@ fun InventoryScreen(
         },
         detailPane = {
             AnimatedPane {
-                when (scaffoldNavigator.currentDestination?.content) {
+                when (scaffoldNavigator.currentDestination?.contentKey) {
                     InventoryDestination.UnitOfMeasures -> {
                         UnitOfMeasuresRoute(
                             onBack = {
-                                scaffoldNavigator.navigateBack()
+                                scope.launch {
+                                    scaffoldNavigator.navigateBack()
+                                }
                             },
                             modifier = Modifier.fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
@@ -82,7 +89,9 @@ fun InventoryScreen(
                     InventoryDestination.Warehouses -> {
                         WarehouseRoute(
                             onBack = {
-                                scaffoldNavigator.navigateBack()
+                                scope.launch {
+                                    scaffoldNavigator.navigateBack()
+                                }
                             },
                             modifier = Modifier.fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
@@ -92,7 +101,9 @@ fun InventoryScreen(
                     InventoryDestination.Categories -> {
                         CategoryRoute(
                             onBack = {
-                                scaffoldNavigator.navigateBack()
+                                scope.launch {
+                                    scaffoldNavigator.navigateBack()
+                                }
                             },
                             modifier = Modifier.fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
@@ -102,7 +113,9 @@ fun InventoryScreen(
                     InventoryDestination.Products -> {
                         ProductRoute(
                             onBack = {
-                                scaffoldNavigator.navigateBack()
+                                scope.launch {
+                                    scaffoldNavigator.navigateBack()
+                                }
                             },
                             modifier = Modifier.fillMaxSize()
                                 .background(MaterialTheme.colorScheme.primary.copy(alpha = .1f))
@@ -112,6 +125,6 @@ fun InventoryScreen(
                     else -> {}
                 }
             }
-        }
+        },
     )
 }
